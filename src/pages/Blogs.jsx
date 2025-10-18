@@ -14,7 +14,7 @@ export const Blogs = () => {
                     <a href="blog-detalle1.html" class="btn btn-success">Ver Caso</a>
                 </div>
                 <div class="col-md-6">
-                    {/* <img src="./img/aire-puro.png" alt="Plantas purificadoras" class="img-fluid rounded shadow"> */}
+                    <img src="./img/aire-puro.png" alt="Plantas purificadoras" class="img-fluid rounded shadow" />
                 </div>
             </div>
 
@@ -26,8 +26,7 @@ export const Blogs = () => {
                     <a href="blog-detalle2.html" class="btn btn-success">Ver Caso</a>
                 </div>
                 <div class="col-md-6">
-                    {/* <img src="./img/suculentas.png" alt="Suculentas" class="img-fluid rounded shadow"> */}
-                </div>
+                    <img src="./img/suculentas.png" alt="Suculentas" class="img-fluid rounded shadow" />                 </div>
             </div>
         </div>
 
