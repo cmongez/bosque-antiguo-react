@@ -1,0 +1,88 @@
+@media (min-width: 768px) {
+    .footer-columns {
+        flex-direction: row;
+        gap: 5rem;
+        justify-content: center;
+    }
+}
+
+/* Ajustes móviles */
+@media (max-width: 767px) {
+    .footer-columns {
+        flex-direction: column;
+        gap: 2rem;
+        margin-top: 20px;
+        align-items: center;
+    }
+}
+
+/* =================== FOOTER =================== */
+
+.site-footer {
+    background: #222222;
+    color: white;
+    text-align: center;
+    padding: 15px;
+    margin-top: 50px;
+}
+
+.social-icons {
+    margin-top: 20px;
+}
+
+.social-icons a i {
+    color: #fff;
+    margin: 0 10px;
+    font-size: 24px;
+    transition: color 0.3s ease;
+}
+
+.social-icons a:hover i {
+    color: #00c853;
+    /* Verde al pasar el mouse */
+}
+
+/* Columnas y enlaces */
+.site-footer h5 {
+    color: #ffffff;
+    margin-bottom: 2rem;
+}
+
+.footer-link {
+    color: #ffffff;
+    text-decoration: none;
+    transition: color 0.3s ease;
+}
+
+.footer-link:hover {
+    color: #00c853;
+    /* Verde al pasar el mouse */
+}
+
+/* Footer columns */
+.footer-columns {
+    display: flex;
+    flex-direction: column;
+    gap: 2rem;
+    flex-grow: 1;
+    align-items: center;
+    /* centra las columnas horizontalmente */
+}
+
+@media (min-width: 768px) {
+    .footer-columns {
+        flex-direction: row;
+        gap: 5rem;
+        justify-content: center;
+    }
+}
+
+/* Ajustes móviles */
+@media (max-width: 767px) {
+    .footer-columns {
+        flex-direction: column;
+        gap: 2rem;
+        margin-top: 20px;
+        align-items: center;
+    }
+}
