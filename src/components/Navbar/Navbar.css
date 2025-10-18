@@ -1,0 +1,35 @@
+/* =================== NAV =================== */
+
+.nav {
+    display: flex;
+    /* activa flexbox */
+    justify-content: space-between;
+    /* logo izquierda, menú derecha */
+    align-items: center;
+    /* centra verticalmente */
+    padding: 60px 60px;
+}
+
+/* =================== ICONOS NAVBAR =================== */
+.nav-icon i {
+    color: white;
+    /* blanco siempre */
+    font-size: 26px;
+    /* tamaño*/
+    transition: color 0.3s ease, transform 0.3s ease;
+}
+
+.nav-icon i:hover {
+    color: #d1d1d1;
+    /* gris claro al pasar el mouse */
+
+    transform: scale(1.15);
+    /* ligero aumento */
+}
+
+/* Separación uniforme entre iconos en pantallas grandes */
+.navbar.align-self-center.d-flex.gap-4 {
+    gap: 40px;
+    /* espacio entre cada icono */
+    align-items: center;
+}
