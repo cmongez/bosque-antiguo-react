@@ -10,8 +10,6 @@ export const Layout = () => {
             <Navbar />
             <Outlet />
             <Footer />
-
-
         </div>
     )
 }
