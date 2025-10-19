@@ -173,9 +173,7 @@ export const Home = () => {
       <button id="btnTop" title="Ir arriba">
         <i className="fa-solid fa-chevron-up"></i>
       </button>
-
       <ModalBusqueda />
-
     </>
   )
 }
