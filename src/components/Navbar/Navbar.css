@@ -33,3 +33,60 @@
     /* espacio entre cada icono */
     align-items: center;
 }
+
+/* =================== LOGO =================== */
+
+.logo {
+  color: white;
+  font-weight: bold;
+}
+
+.logo img {
+  height: 180px;
+  /* altura fija del logo */
+  width: auto;
+  /* mantiene proporción */
+  display: block;
+  /* evita que el logo se "baje" */
+}
+
+/* Logo más pequeño en móviles */
+@media (max-width: 768px) {
+  nav .logo img {
+    height: 100px; /* o incluso 100px si quieres más chico */
+  }
+  .nav-icon i {
+  font-size: 20px; /* tamaño*/
+}
+}
+
+.menu {
+  display: flex;
+  gap: 30px;
+  list-style: none;
+  margin: 0;
+  padding: 0;
+}
+
+.menu a {
+  position: relative;
+  color: white;
+  text-decoration: none;
+  padding: 8px 12px;
+  border-radius: 8px;
+  transition: background 0.3s;
+}
+
+.menu a:hover {
+  position: absolute;
+  left: 0;
+  bottom: 0;
+  width: 0;
+  height: 2px;
+  background: white;
+  transition: width 0.3s;
+}
+
+.menu a:hover::after {
+  width: 200%;
+}
