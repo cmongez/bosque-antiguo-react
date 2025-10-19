@@ -17,9 +17,10 @@ function readProducts() {
                     return arr;
                 }
             }
-        } catch { }
+        } catch {
+            console.warn(`[Categorias] Error leyendo/parsing localStorage key: ${k}`);
+        }
     }
-    console.warn("[Categorias] No se encontraron productos en localStorage.");
     return [];
 }
 
@@ -112,7 +113,7 @@ export const Categorias = () => {
                 {filtrados.map((p) => (
                     <div className="col-md-4 col-lg-3" key={p.codigo}>
                         <div className="card h-100">
-                            <img src={p.img} className="card-img-top" alt={p.nombre} />
+                            <img src={new URL(p.img, import.meta.url).href} className="card-img-top" alt={p.nombre} />
                             <div className="card-body text-center d-flex flex-column">
                                 <h5 className="card-title">{p.nombre}</h5>
                                 <p className="mb-1">{clp(p.precio || 0)}</p>
@@ -121,7 +122,7 @@ export const Categorias = () => {
                                         {p.categoria}
                                     </span>
                                 )}
-                                <Link to={`/detalle/${p.codigo}`} className="btn btn-success mt-auto">
+                                <Link to={`/detalle?codigo=${p.codigo}`} className="btn btn-success mt-auto">
                                     Ver detalle
                                 </Link>
                             </div>

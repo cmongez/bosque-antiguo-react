@@ -1,13 +1,39 @@
-import React from 'react'
-import imagen1 from './../assets/img/alto-angulo-de-plantas-en-macetas-negras.jpg'
-import imagen2 from './../assets/img/close-up-manos-sosteniendo-plantas-de-interior.jpg'
-import imagen3 from './../assets/img/fondo-de-planta-de-interior-verde-para-amantes-de-las-plantas.jpg'
-import producto1 from './../assets/img/jardineria1.jpg'
-import producto2 from './../assets/img/jardineria.jpg'
-import producto3 from './../assets/img/close-up-manos-sosteniendo-plantas-de-interior.jpg'
-import { ModalBusqueda } from '../components/ModalBusqueda'
+import React, { useEffect, useState } from 'react'
+import imagen1 from './../../assets/img/alto-angulo-de-plantas-en-macetas-negras.jpg'
+import imagen2 from './../../assets/img/close-up-manos-sosteniendo-plantas-de-interior.jpg'
+import imagen3 from './../../assets/img/fondo-de-planta-de-interior-verde-para-amantes-de-las-plantas.jpg'
+import producto1 from './../../assets/img/jardineria1.jpg'
+import producto2 from './../../assets/img/jardineria.jpg'
+import producto3 from './../../assets/img/close-up-manos-sosteniendo-plantas-de-interior.jpg'
+import { Link } from 'react-router-dom'
+
+import './Home.css'
 
 export const Home = () => {
+
+  const [showButton, setShowButton] = useState(false)
+
+  // Escucha el scroll para mostrar u ocultar el botón
+  useEffect(() => {
+    const handleScroll = () => {
+      if (window.scrollY > 300) {
+        setShowButton(true)
+      } else {
+        setShowButton(false)
+      }
+    }
+
+    window.addEventListener('scroll', handleScroll)
+    return () => window.removeEventListener('scroll', handleScroll)
+  }, [])
+
+  // Función para volver arriba
+  const scrollToTop = () => {
+    window.scrollTo({
+      top: 0,
+      behavior: 'smooth'
+    })
+  }
   return (
     <>
       {/* <!-- HERO --> */}
@@ -65,7 +91,9 @@ export const Home = () => {
                   Planta de interior de hojas brillantes, fácil de cuidar.
                 </p>
                 <p><strong>Precio:</strong> $10.000</p>
-                <a href="detalle.html?codigo=PI001" className="btn btn-success">Ver detalle</a>
+                <Link to="/detalle?codigo=PI001" className="btn btn-success">
+                  Ver detalle
+                </Link>
               </div>
             </div>
           </div>
@@ -79,7 +107,9 @@ export const Home = () => {
                   Conocida como lengua de suegra, muy resistente.
                 </p>
                 <p><strong>Precio:</strong> $15.000</p>
-                <a href="detalle.html?codigo=PI002" className="btn btn-success">Ver detalle</a>
+                <Link to="/detalle?codigo=PI002" className="btn btn-success">
+                  Ver detalle
+                </Link>
               </div>
             </div>
           </div>
@@ -93,7 +123,9 @@ export const Home = () => {
                   Árbol frutal de mandarinas dulces y jugosas.
                 </p>
                 <p><strong>Precio:</strong> $12.000</p>
-                <a href="detalle.html?codigo=FR001" className="btn btn-success">Ver detalle</a>
+                <Link to="/detalle?codigo=FR001" className="btn btn-success">
+                  Ver detalle
+                </Link>
               </div>
             </div>
           </div>
@@ -169,11 +201,12 @@ export const Home = () => {
         </button>
       </div>
 
-      {/* <!-- BOTÓN VOLVER ARRIBA --> */}
-      <button id="btnTop" title="Ir arriba">
-        <i className="fa-solid fa-chevron-up"></i>
-      </button>
-      <ModalBusqueda />
+      {/* BOTÓN VOLVER ARRIBA */}
+      {showButton && (
+        <button id="btnTop" title="Ir arriba" onClick={scrollToTop}>
+          <i className="fa-solid fa-chevron-up"></i>
+        </button>
+      )}
     </>
   )
 }

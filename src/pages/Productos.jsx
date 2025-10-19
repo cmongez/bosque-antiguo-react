@@ -1,135 +1,52 @@
-import React from 'react'
-import { ProductCard } from '../components/ProductCard';
-// Array con más productos
-const products = [
-  // Plantas de interior
-  {
-    codigo: "PI001",
-    nombre: "Ficus",
-    descripcion: "Planta de interior de hojas brillantes, fácil de cuidar.",
-    precio: 10000,
-    stock: 25,
-    stockCritico: 5,
-    categoria: "Plantas de interior",
-    img: "./../assets/img/aire-puro.png"
-  },
-  {
-    codigo: "PI002",
-    nombre: "Sansevieria",
-    descripcion: "Conocida como lengua de suegra, muy resistente.",
-    precio: 15000,
-    stock: 40,
-    stockCritico: 10,
-    categoria: "Plantas de interior",
-    img: "./../assets/img/jardineria.jpg"
-  },
-  {
-    codigo: "PI003",
-    nombre: "Afelandra",
-    descripcion: "Planta tropical con hojas llamativas y flores amarillas.",
-    precio: 12000,
-    stock: 15,
-    stockCritico: 3,
-    categoria: "Plantas de interior",
-    img: "./../assets/img/close-up-manos-sosteniendo-plantas-de-interior.jpg"
-  },
+import React, { useEffect, useState } from 'react'
+import { ProductCard } from '../components/ProductCard'
 
-  // Arbustos ornamentales
-  {
-    codigo: "AO001",
-    nombre: "Azalea",
-    descripcion: "Arbusto ornamental con flores rosadas y blancas.",
-    precio: 9000,
-    stock: 30,
-    stockCritico: 6,
-    categoria: "Arbustos ornamentales",
-    img: "./../assets/img/jardineria1.jpg"
-  },
-  {
-    codigo: "AO002",
-    nombre: "Rosas",
-    descripcion: "Clásico arbusto ornamental de flores variadas.",
-    precio: 7000,
-    stock: 50,
-    stockCritico: 10,
-    categoria: "Arbustos ornamentales",
-    img: "./../assets/img/jardineria.jpg"
-  },
-
-  // Insumos de jardinería
-  {
-    codigo: "IN001",
-    nombre: "Compost",
-    descripcion: "Mezcla orgánica para nutrir la tierra.",
-    precio: 5000,
-    stock: 100,
-    stockCritico: 20,
-    categoria: "Insumos de jardinería",
-    img: "./../assets/img/jardineria1.jpg"
-  },
-  {
-    codigo: "IN002",
-    nombre: "Guano Rojo",
-    descripcion: "Fertilizante natural rico en nutrientes.",
-    precio: 6000,
-    stock: 10,
-    stockCritico: 15,
-    categoria: "Insumos de jardinería",
-    img: "./../assets/img/jardineria.jpg"
-  },
-
-  // Frutales
-  {
-    codigo: "FR001",
-    nombre: "Mandarino",
-    descripcion: "Árbol frutal de mandarinas dulces y jugosas.",
-    precio: 12000,
-    stock: 20,
-    stockCritico: 4,
-    categoria: "Frutales",
-    img: "./../assets/img/close-up-manos-sosteniendo-plantas-de-interior.jpg"
-  },
-  {
-    codigo: "FR002",
-    nombre: "Palto",
-    descripcion: "Árbol frutal que produce paltas (aguacates).",
-    precio: 18000,
-    stock: 10,
-    stockCritico: 2,
-    categoria: "Frutales",
-    img: "./../assets/img/jardineria1.jpg"
-  },
-
-  // Servicios
-  {
-    codigo: "SV001",
-    nombre: "Taller de Jardinería",
-    descripcion: "Curso práctico para aprender técnicas básicas de jardinería.",
-    precio: 10000,
-    stock: 50, // cupos disponibles
-    stockCritico: 5,
-    categoria: "Servicios",
-    img: "./../assets/img/jardineria1.jpg"
-  },
-  {
-    codigo: "SV002",
-    nombre: "Taller de Compostaje",
-    descripcion: "Aprende a producir compost casero de forma sencilla.",
-    precio: 12000,
-    stock: 100,
-    stockCritico: 20,
-    categoria: "Servicios",
-    img: "./../assets/img/jardineria.jpg"
-  }
-];
 export const Productos = () => {
+  const [productos, setProductos] = useState([])
+  const [loading, setLoading] = useState(true)
+
+  useEffect(() => {
+    fetch('/data/productos.json')
+      .then(res => res.json())
+      .then(data => {
+        setProductos(data)
+        localStorage.setItem("productos", JSON.stringify(data))
+        setLoading(false)
+      })
+      .catch(() => setLoading(false))
+  }, [])
+
+  const addToCart = codigo => {
+    let cart = JSON.parse(localStorage.getItem('carrito')) || []
+    const producto = productos.find(p => p.codigo === codigo)
+    if (!producto) return
+
+    const existente = cart.find(p => p.codigo === codigo)
+    if (existente) {
+      existente.cantidad += 1
+    } else {
+      cart.push({ ...producto, cantidad: 1 })
+    }
+
+    // Guardar carrito actualizado
+    localStorage.setItem('carrito', JSON.stringify(cart))
+
+    // 🔥 Notificar al Navbar para que actualice el contador
+    window.dispatchEvent(new Event('updateCart'))
+
+    // Feedback visual
+    alert(`${producto.nombre} añadido al carrito`)
+  }
+
+
+  if (loading) return <h2 className="text-center py-5">Cargando productos...</h2>
+
   return (
-    //   <!-- PRODUCTOS -->
     <section className="container py-5">
       <h2 className="text-center mb-4">Nuestros productos</h2>
-      <div id="productsGrid" className="row g-4">
-        {products.map((prod) => (
-          <ProductCard producto={prod} />
+      <div className="row g-4">
+        {productos.map(prod => (
+          <ProductCard key={prod.codigo} producto={prod} addToCart={addToCart} />
         ))}
       </div>
     </section>

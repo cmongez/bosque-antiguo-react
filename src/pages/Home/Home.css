@@ -1,0 +1,27 @@
+/* =================== BOTÓN VOLVER ARRIBA =================== */
+#btnTop {
+  opacity: 0px;
+  display: block; /* siempre visible */
+  position: fixed;
+  bottom: 20px;
+  right: 20px;
+  z-index: 99;
+  border: none;
+  outline: none;
+  background-color: var(--primary);
+  color: var(--bg);
+  cursor: pointer;
+  padding: 12px 16px;
+  border-radius: 50%;
+  font-size: 20px;
+  transition: background-color 0.3s;
+}
+
+#btnTop:hover {
+  background-color: #555;
+}
+
+
+#btnTop i {
+  pointer-events: none;
+}

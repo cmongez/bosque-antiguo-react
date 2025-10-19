@@ -1,0 +1,42 @@
+/* Fondo del hero */
+.hero-contact {
+  background-image: url('./../../assets/img/jardineria1.jpg');
+  background-size: cover;
+  background-position: center;
+  padding: 120px 0;
+  color: white;
+  text-align: center;
+}
+
+/* Asegura que los textos sean legibles */
+.hero-contact h2 {
+  font-weight: bold;
+}
+
+/* Imagen del logo en el footer */
+.footer-logo img {
+  max-width: 150px;
+}
+
+/* Quitar borde del iframe del mapa */
+.map-frame {
+  border: 0;
+}
+
+/* Botón volver arriba */
+#btnTop {
+  position: fixed;
+  bottom: 20px;
+  right: 20px;
+  background-color: #198754; /* verde Bootstrap */
+  color: white;
+  border: none;
+  border-radius: 50%;
+  padding: 10px 12px;
+  cursor: pointer;
+  z-index: 1000;
+}
+
+#btnTop:hover {
+  background-color: #146c43;
+}
