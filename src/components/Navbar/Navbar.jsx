@@ -26,24 +26,24 @@ export const Navbar = () => {
                             </div>
                         </div>
                         {/* <!-- ÍCONO BÚSQUEDA en escritorio --> */}
-                        <NavLink className="nav-icon d-none d-lg-inline" href="#" data-bs-toggle="modal" data-bs-target="#buscadorModal">
+                        <NavLink className="nav-icon d-none d-lg-inline" to="#" data-bs-toggle="modal" data-bs-target="#buscadorModal">
                             <i className="fa fa-fw fa-search text-white" style={{fontSize: "24px"}}></i>
                         </NavLink>
 
 
                     </div>
                     {/* <!-- ÍCONO BÚSQUEDA en escritorio --> */}
-                    <NavLink className="nav-icon d-none d-lg-inline" href="#" data-bs-toggle="modal" data-bs-target="#buscadorModal">
+                    <NavLink className="nav-icon d-none d-lg-inline" to="#" data-bs-toggle="modal" data-bs-target="#buscadorModal">
                         <i className="fa fa-fw fa-search text-dark" style={{fontSize: "24px"}}></i>
                     </NavLink>
                     {/* <!-- ÍCONO CARRITO --> */}
-                    <NavLink className="mx-4 mx-md-2 mx-lg-4 nav-icon position-relative text-decoration-none" href="./carrito.html">
+                    <NavLink className="mx-4 mx-md-2 mx-lg-4 nav-icon position-relative text-decoration-none" to="./carrito">
                         <i className="fa fa-fw fa-cart-arrow-down text-white mr-1"></i>
                         <span id="cartCount"
                             className="position-absolute top-0 start-100 translate-middle badge rounded-pill bg-light text-dark">0</span>
                     </NavLink>
                     {/* <!-- ÍCONO USUARIO --> */}
-                    <NavLink className="nav-icon position-relative text-decoration-none" href="admin-home.html">
+                    <NavLink className="nav-icon position-relative text-decoration-none" to="admin-home">
                         <i className="fa fa-fw fa-user text-white mr-3"></i>
                         <span
                             className="position-absolute top-0 left-100 translate-middle badge rounded-pill bg-light text-dark">+99</span>
@@ -59,26 +59,26 @@ export const Navbar = () => {
                 <div className="collapse d-lg-flex justify-content-lg-center  navbar-collapse" id="menu">
                     <ul className="navbar-nav d-flex  text-center gap-2">
                         <li className="nav-item">
-                            <NavLink className="nav-link active" href="index.html">Inicio</NavLink>
+                            <NavLink className="nav-link active" to="/home">Inicio</NavLink>
                         </li>
                         <li className="nav-item">
-                            <NavLink className="nav-link" href="productos.html">Productos</NavLink>
+                            <NavLink className="nav-link" to="/productos">Productos</NavLink>
                         </li>
                         {/* <!-- Aquí agregamos las nuevas opciones --> */}
                         <li className="nav-item">
-                            <NavLink className="nav-link" href="nosotros.html">Nosotros</NavLink>
+                            <NavLink className="nav-link" to="/nosotros">Nosotros</NavLink>
                         </li>
                         <li className="nav-item">
-                            <NavLink className="nav-link" href="blogs.html">Blogs</NavLink>
+                            <NavLink className="nav-link" to="/blogs">Blogs</NavLink>
                         </li>
                         <li className="nav-item">
-                            <NavLink className="nav-link" href="registro.html">Registro</NavLink>
+                            <NavLink className="nav-link" to="/registro">Registro</NavLink>
                         </li>
                         <li className="nav-item">
-                            <NavLink className="nav-link" href="login.html">Iniciar Sesión</NavLink>
+                            <NavLink className="nav-link" to="/login">Iniciar Sesión</NavLink>
                         </li>
                         <li className="nav-item">
-                            <NavLink className="nav-link" href="contacto.html">Contacto</NavLink>
+                            <NavLink className="nav-link" to="/contacto">Contacto</NavLink>
                         </li>
                     </ul>
                 </div>
