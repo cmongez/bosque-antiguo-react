@@ -1,5 +1,6 @@
 import React from 'react'
-
+import './Footer.css'
+import logo from './../../assets/img/logo_ba.png'
 export const Footer = () => {
     return (
         //    <!-- FOOTER -->
@@ -8,7 +9,7 @@ export const Footer = () => {
                 {/* <!-- Logo a la izquierda --> */}
                 <div className="footer-logo mb-4 mb-md-0">
                     <a href="./index.html">
-                        <img src="./img/logo ba.png" alt="Logo" className="img-fluid" style={{maxWidth: "150px"}} />
+                        <img src={logo} alt="Logo" className="img-fluid" style={{maxWidth: "150px"}} />
                     </a>
                 </div>
 

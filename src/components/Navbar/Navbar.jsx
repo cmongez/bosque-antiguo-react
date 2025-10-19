@@ -1,4 +1,7 @@
 import React from 'react'
+import './Navbar.css'
+import logo from './../../assets/img/logo_ba.png'
+import { Link, NavLink } from 'react-router-dom'
 
 export const Navbar = () => {
     return (
@@ -6,9 +9,9 @@ export const Navbar = () => {
         //   < !--navbar verde, con textos blancos, que en pantallas pequeñas se transforma en menú colapsable-- >
         <nav className="navbar navbar-expand-lg navbar-dark bg-success px-2">
             <div className="container-fluid px-0 ">
-                <a className="navbar-brand logo" href="index.html">
-                    <img src="./img/logo ba.png" alt="Logo" />
-                </a>
+                <Link className="navbar-brand logo" to="/home">
+                    <img src={logo} alt="Logo" />
+                </Link>
 
                 {/* <!-- ICONOS DE BUSQUEDA,CARRITO,USUARIO --> */}
 
@@ -23,28 +26,28 @@ export const Navbar = () => {
                             </div>
                         </div>
                         {/* <!-- ÍCONO BÚSQUEDA en escritorio --> */}
-                        <a className="nav-icon d-none d-lg-inline" href="#" data-bs-toggle="modal" data-bs-target="#buscadorModal">
+                        <NavLink className="nav-icon d-none d-lg-inline" href="#" data-bs-toggle="modal" data-bs-target="#buscadorModal">
                             <i className="fa fa-fw fa-search text-white" style={{fontSize: "24px"}}></i>
-                        </a>
+                        </NavLink>
 
 
                     </div>
                     {/* <!-- ÍCONO BÚSQUEDA en escritorio --> */}
-                    <a className="nav-icon d-none d-lg-inline" href="#" data-bs-toggle="modal" data-bs-target="#buscadorModal">
+                    <NavLink className="nav-icon d-none d-lg-inline" href="#" data-bs-toggle="modal" data-bs-target="#buscadorModal">
                         <i className="fa fa-fw fa-search text-dark" style={{fontSize: "24px"}}></i>
-                    </a>
+                    </NavLink>
                     {/* <!-- ÍCONO CARRITO --> */}
-                    <a className="mx-4 mx-md-2 mx-lg-4 nav-icon position-relative text-decoration-none" href="./carrito.html">
+                    <NavLink className="mx-4 mx-md-2 mx-lg-4 nav-icon position-relative text-decoration-none" href="./carrito.html">
                         <i className="fa fa-fw fa-cart-arrow-down text-white mr-1"></i>
                         <span id="cartCount"
                             className="position-absolute top-0 start-100 translate-middle badge rounded-pill bg-light text-dark">0</span>
-                    </a>
+                    </NavLink>
                     {/* <!-- ÍCONO USUARIO --> */}
-                    <a className="nav-icon position-relative text-decoration-none" href="admin-home.html">
+                    <NavLink className="nav-icon position-relative text-decoration-none" href="admin-home.html">
                         <i className="fa fa-fw fa-user text-white mr-3"></i>
                         <span
                             className="position-absolute top-0 left-100 translate-middle badge rounded-pill bg-light text-dark">+99</span>
-                    </a>
+                    </NavLink>
 
                 </div>
                 {/* <!--active indica el enlace actual--> */}
@@ -56,26 +59,26 @@ export const Navbar = () => {
                 <div className="collapse d-lg-flex justify-content-lg-center  navbar-collapse" id="menu">
                     <ul className="navbar-nav d-flex  text-center gap-2">
                         <li className="nav-item">
-                            <a className="nav-link active" href="index.html">Inicio</a>
+                            <NavLink className="nav-link active" href="index.html">Inicio</NavLink>
                         </li>
                         <li className="nav-item">
-                            <a className="nav-link" href="productos.html">Productos</a>
+                            <NavLink className="nav-link" href="productos.html">Productos</NavLink>
                         </li>
                         {/* <!-- Aquí agregamos las nuevas opciones --> */}
                         <li className="nav-item">
-                            <a className="nav-link" href="nosotros.html">Nosotros</a>
+                            <NavLink className="nav-link" href="nosotros.html">Nosotros</NavLink>
                         </li>
                         <li className="nav-item">
-                            <a className="nav-link" href="blogs.html">Blogs</a>
+                            <NavLink className="nav-link" href="blogs.html">Blogs</NavLink>
                         </li>
                         <li className="nav-item">
-                            <a className="nav-link" href="registro.html">Registro</a>
+                            <NavLink className="nav-link" href="registro.html">Registro</NavLink>
                         </li>
                         <li className="nav-item">
-                            <a className="nav-link" href="login.html">Iniciar Sesión</a>
+                            <NavLink className="nav-link" href="login.html">Iniciar Sesión</NavLink>
                         </li>
                         <li className="nav-item">
-                            <a className="nav-link" href="contacto.html">Contacto</a>
+                            <NavLink className="nav-link" href="contacto.html">Contacto</NavLink>
                         </li>
                     </ul>
                 </div>
