@@ -16,29 +16,31 @@ function readLS(key, fallback) {
 
 export const CheckOut = () => {
     const nav = useNavigate()
+    const [isPaying, setIsPaying] = useState(false)
 
     // Cart esperado: [{id:'p1', qty:2}, ...]
-    const cart = readLS('cart', [])
+    const cart = readLS('carrito', [])
     // Products esperado: [{id:'p1', name:'...', price: 9990, image:'/img...'}, ...]
-    const products = readLS('products', [])
+    const products = readLS('productos', [])
 
     // Si no hay items, volvemos al carrito
     useEffect(() => {
-        if (!cart || cart.length === 0) nav('/carrito', { replace: true })
+        if (!isPaying && (!cart || cart.length === 0)) {
+            nav('/carrito', { replace: true })
+        }
         // eslint-disable-next-line react-hooks/exhaustive-deps
-    }, [Array.isArray(cart) ? cart.length : 0])
-
+    }, [Array.isArray(cart) ? cart.length : 0, isPaying])
     // Armar filas del resumen
     const rows = useMemo(() => {
         return (cart || []).map(item => {
-            const p = (products || []).find(x => x.id === item.id)
-            const price = p?.price ?? 0
+            const p = (products || []).find(x => x.codigo === item.codigo)
+            const precio = p?.precio ?? 0
             return {
-                id: item.id,
-                name: p?.name ?? 'Producto',
-                price,
-                qty: item.qty,
-                subtotal: price * (item.qty || 0)
+                codigo: item.codigo,
+                nombre: p?.nombre ?? 'Producto',
+                precio,
+                cantidad: item.cantidad,
+                subtotal: precio * (item.cantidad || 0)
             }
         })
     }, [cart, products])
@@ -64,20 +66,22 @@ export const CheckOut = () => {
         setTouched({ name: true, email: true, address: true })
         if (!isValid) return
 
-        // Guardar datos de usuario para futuras compras (opcional)
         localStorage.setItem('checkoutUser', JSON.stringify(form))
+        setIsPaying(true)
 
-        // Simular pago: si hay total, “éxito”
         if (total > 0) {
-            // vaciar carrito
-            localStorage.setItem('cart', JSON.stringify([]))
-            // redirigir (ajusta cuando tengas /compra-exitosa)
-            nav('/productos', { replace: true, state: { paid: true, orderId: Date.now() } })
+            localStorage.setItem('carrito', JSON.stringify([]))
+            window.dispatchEvent(new Event('updateCart'))
+
+            const orderId = Date.now()
+            nav(`/compra-exitosa/${orderId}`, { state: { form, rows, total } })
         } else {
-            // redirigir (ajusta cuando tengas /compra-fallida)
-            nav('/carrito', { replace: true, state: { error: 'No hay ítems para pagar' } })
+            const orderId = Date.now()
+            nav(`/compra-fallida/${orderId}`, { state: { form, rows, total } })
         }
     }
+
+
 
     return (
         <div className="container py-5">
@@ -174,9 +178,9 @@ export const CheckOut = () => {
                                             </thead>
                                             <tbody>
                                                 {rows.map(r => (
-                                                    <tr key={r.id}>
-                                                        <td>{r.name}</td>
-                                                        <td className="text-center">{r.qty}</td>
+                                                    <tr key={r.codigo}>
+                                                        <td>{r.nombre}</td>
+                                                        <td className="text-center">{r.cantidad}</td>
                                                         <td className="text-end">{clp(r.subtotal)}</td>
                                                     </tr>
                                                 ))}

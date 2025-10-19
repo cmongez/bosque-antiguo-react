@@ -1,24 +1,30 @@
-import React from "react";
+import React, { useEffect } from 'react'
+import './Nosotros.css'
 
-export const Nosotros= () => {
+export const Nosotros = () => {
+  useEffect(() => {
+    const observer = new IntersectionObserver(entries => {
+      entries.forEach(entry => {
+        if (entry.isIntersecting) {
+          entry.target.classList.add('fade-in-visible')
+        }
+      })
+    })
+
+    document.querySelectorAll('.fade-left').forEach(el => observer.observe(el))
+    return () => observer.disconnect()
+  }, [])
+
   return (
     <>
-      {/* HERO NOSOTROS */}
-      <section
-        className="hero-contact text-center text-white"
-        style={{
-          backgroundImage: "url('/img/jardineria1.jpg')",
-          backgroundSize: "cover",
-          backgroundPosition: "center",
-          padding: "120px 0",
-        }}
-      >
+      {/* HERO */}
+      <section className="hero-nosotros text-center text-white">
         <div className="container">
           <h2>Nosotros</h2>
         </div>
       </section>
 
-      {/* SECCIÓN NOSOTROS */}
+      {/* SECCIÓN SOBRE NOSOTROS */}
       <section className="container py-5 section-about">
         <div className="row fade-left">
           <div className="col text-dark">
@@ -38,24 +44,9 @@ export const Nosotros= () => {
         </div>
       </section>
 
-      {/* NUESTRA MISIÓN */}
-      <section
-        className="text-white text-center py-5 my-4 position-relative"
-        style={{
-          backgroundImage:
-            "url('/img/alto-angulo-de-plantas-en-macetas-negras.jpg')",
-          backgroundSize: "cover",
-          backgroundPosition: "center",
-        }}
-      >
-        {/* overlay */}
-        <div
-          style={{
-            position: "absolute",
-            inset: 0, // top:0, right:0, bottom:0, left:0
-            backgroundColor: "rgba(0,0,0,.5)",
-          }}
-        />
+      {/* MISIÓN */}
+      <section className="hero-section text-white text-center py-5 my-4 mision">
+        <div className="overlay"></div>
         <div className="container position-relative">
           <h2 className="mb-3">Nuestra Misión</h2>
           <p className="lead">
@@ -63,40 +54,26 @@ export const Nosotros= () => {
             ofreciendo plantas nativas, frutales, flora melífera, ornamentales y
             de interior, junto con insumos y asesoría personalizada. Nos
             comprometemos a entregar soluciones sustentables que apoyen la
-            reforestación, la biodiversidad y el aprendizaje comunitario a
-            través de talleres de agroecología.
+            reforestación, la biodiversidad y el aprendizaje comunitario a través
+            de talleres de agroecología.
           </p>
         </div>
       </section>
 
-      {/* NUESTRA VISIÓN */}
-      <section
-        className="text-white text-center py-5 my-4 position-relative"
-        style={{
-          backgroundImage:
-            "url('/img/alto-angulo-de-plantas-en-macetas-negras.jpg')",
-          backgroundSize: "cover",
-          backgroundPosition: "center",
-        }}
-      >
-        <div
-          style={{
-            position: "absolute",
-            inset: 0,
-            backgroundColor: "rgba(0,0,0,.5)",
-          }}
-        />
+      {/* VISIÓN */}
+      <section className="hero-section text-white text-center py-5 my-4 vision">
+        <div className="overlay"></div>
         <div className="container position-relative">
           <h2 className="mb-3">Nuestra Visión</h2>
           <p className="lead">
             Nuestra visión es ser el vivero referente en Chile en conservación,
-            educación ambiental y paisajismo ecológico, reconocido por la
-            calidad de nuestras plantas, el impacto positivo en la restauración
-            de ecosistemas y la cercanía con comunidades rurales y urbanas que
-            buscan reconectar con la tierra.
+            educación ambiental y paisajismo ecológico, reconocido por la calidad
+            de nuestras plantas, el impacto positivo en la restauración de
+            ecosistemas y la cercanía con comunidades rurales y urbanas que buscan
+            reconectar con la tierra.
           </p>
         </div>
       </section>
     </>
-  );
+  )
 }

@@ -1,0 +1,23 @@
+.gallery-main {
+  width: 100%;
+  aspect-ratio: 1 / 1;
+  background: #fff;
+  border: 1px solid #e5e5e5;
+  border-radius: 0.5rem;
+  object-fit: cover;
+}
+
+.price {
+  font-size: 1.75rem;
+  font-weight: 700;
+  color: #198754;
+}
+
+.qty-input {
+  max-width: 150px;
+}
+
+.related img {
+  height: 160px;
+  object-fit: cover;
+}

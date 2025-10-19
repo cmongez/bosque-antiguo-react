@@ -1,0 +1,52 @@
+/* Hero principal */
+.hero-nosotros {
+  background-image: url('./../../assets/img/jardineria1.jpg');
+  background-size: cover;
+  background-position: center;
+  padding: 120px 0;
+  color: white;
+  text-align: center;
+}
+
+/* Sección misión y visión con fondo */
+.hero-section {
+  background-image: url('./../../assets/img/alto-angulo-de-plantas-en-macetas-negras.jpg');
+  background-size: cover;
+  background-position: center;
+  position: relative;
+}
+
+.hero-section .overlay {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background-color: rgba(0, 0, 0, 0.5);
+}
+
+/* Animación fade-in */
+.fade-left {
+  opacity: 0;
+  transform: translateX(-20px);
+  transition: all 0.8s ease-in-out;
+}
+
+.fade-in-visible {
+  opacity: 1;
+  transform: translateX(0);
+}
+
+/* Ajuste de textos */
+.section-about p {
+  font-size: 1.1rem;
+  line-height: 1.7;
+  text-align: justify;
+  color: #333;
+}
+
+/* Asegurar contraste del texto blanco */
+.hero-section h2,
+.hero-section p {
+  color: #fff;
+}

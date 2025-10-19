@@ -1,42 +1,62 @@
-#root {
-  max-width: 1280px;
-  margin: 0 auto;
-  padding: 2rem;
-  text-align: center;
+/* =================== VARIABLES GLOBALES =================== */
+
+:root {
+  /* define variables globales */
+  --bg: #f7f7f7; /* guardan colores que usaremos en todo el proyecto */
+  --primary: #2e8b57; /*guardan colores que usaremos en todo el proyecto */
+  --amarillo-mostaza: #ffd700;
+  --titulos-subtitulos: #8b4513;
+  --text: #333; /* guardan colores que usaremos en todo el proyecto */
+  --radius: 10px;
+}
+/* =================== TIPOGRAFÍA =================== */
+@font-face {
+  font-family: "Montserrat";
+  src: url(./assets/fonts/Montserrat-VariableFont_wght.ttf);
 }
 
-.logo {
-  height: 6em;
-  padding: 1.5em;
-  will-change: filter;
-  transition: filter 300ms;
+* {
+  font-family: "Montserrat";
+  box-sizing: border-box;
+  margin: 0;
+  padding: 0;
 }
-.logo:hover {
-  filter: drop-shadow(0 0 2em #646cffaa);
-}
-.logo.react:hover {
-  filter: drop-shadow(0 0 2em #61dafbaa);
+h1 {
+  font-weight: 600;
+  font-size: 80px;
 }
 
-@keyframes logo-spin {
-  from {
-    transform: rotate(0deg);
-  }
-  to {
-    transform: rotate(360deg);
-  }
+h2 {
+  font-weight: 600;
+  font-size: 60px;
+}
+.section-about p {
+  max-width: 800px;      /* ancho máximo para que no se extienda demasiado */
+  margin-left: auto;
+  margin-right: auto;    /* centra solo el bloque, pero texto queda alineado a la izquierda */
+  color: #000;           /* asegura color negro */
+  font-size: 1.1rem;     /* tamaño de letra un poquito mayor */
+  line-height: 1.7;
 }
 
-@media (prefers-reduced-motion: no-preference) {
-  a:nth-of-type(2) .logo {
-    animation: logo-spin infinite 20s linear;
-  }
+body {
+  background: var(--bg);
+  color: var(--text);
+  display: flex;
+  flex-direction: column;
+  min-height: 100vh;
+  justify-content: space-between;
 }
 
-.card {
-  padding: 2em;
+/* =================== CONTENEDOR =================== */
+
+.container {
+  /* centra y limita el ancho del contenido de la página */
+  width: min(90%, 1100px); /* ancho del contenedor */
+  margin: auto;
 }
 
-.read-the-docs {
-  color: #888;
+.site-header {
+  background: var(--primary);
+  padding: 10px 0; /* Aplica espaciado interno (entre el borde del header y su contenido) */
 }

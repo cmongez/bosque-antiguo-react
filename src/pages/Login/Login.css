@@ -1,0 +1,14 @@
+.login-card {
+  max-width: 400px;
+}
+
+/* Enlaces del registro */
+.link-register {
+  color: #198754;
+  text-decoration: none;
+  font-weight: 500;
+}
+
+.link-register:hover {
+  text-decoration: underline;
+}
