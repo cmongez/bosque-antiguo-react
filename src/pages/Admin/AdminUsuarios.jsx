@@ -24,50 +24,65 @@ export const AdminUsuarios = () => {
     ];
 
     return (
-        <div>
+        <div className="container-fluid">
             <div className="d-flex justify-content-between align-items-center mb-4">
-                <h2>Usuarios</h2>
+                <h2>
+                    <i className="fa fa-users me-2"></i>Usuarios
+                </h2>
                 <Link to="/admin/nuevo-usuario" className="btn btn-success">
                     <i className="fa fa-plus me-2"></i>Nuevo Usuario
                 </Link>
             </div>
 
-            <div className="table-responsive">
-                <table className="table table-bordered table-hover align-middle">
-                    <thead className="table-success">
-                        <tr>
-                            <th>Run</th>
-                            <th>Nombre</th>
-                            <th>Correo</th>
-                            <th>Rol</th>
-                            <th>Región</th>
-                            <th>Comuna</th>
-                            <th>Dirección</th>
-                            <th>Acciones</th>
-                        </tr>
-                    </thead>
-                    <tbody>
-                        {usuarios.map((u, i) => (
-                            <tr key={i}>
-                                <td>{u.run}</td>
-                                <td>{u.nombre}</td>
-                                <td>{u.correo}</td>
-                                <td>{u.rol}</td>
-                                <td>{u.region}</td>
-                                <td>{u.comuna}</td>
-                                <td>{u.direccion}</td>
-                                <td>
-                                    <button className="btn btn-sm btn-primary me-1">
-                                        <i className="fa fa-edit"></i>
-                                    </button>
-                                    <button className="btn btn-sm btn-danger">
-                                        <i className="fa fa-trash"></i>
-                                    </button>
-                                </td>
-                            </tr>
-                        ))}
-                    </tbody>
-                </table>
+            <div className="card shadow-sm">
+                <div className="card-body">
+                    <div className="table-responsive">
+                        <table className="table table-bordered table-hover align-middle">
+                            <thead className="table-success">
+                                <tr>
+                                    <th>Run</th>
+                                    <th>Nombre</th>
+                                    <th>Correo</th>
+                                    <th>Rol</th>
+                                    <th>Región</th>
+                                    <th>Comuna</th>
+                                    <th>Dirección</th>
+                                    <th>Acciones</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                {usuarios.map((u, i) => (
+                                    <tr key={i}>
+                                        <td>{u.run}</td>
+                                        <td>{u.nombre}</td>
+                                        <td>{u.correo}</td>
+                                        <td>{u.rol}</td>
+                                        <td>{u.region}</td>
+                                        <td>{u.comuna}</td>
+                                        <td>{u.direccion}</td>
+                                        <td>
+                                            <div className="btn-group">
+                                                <button className="btn btn-sm btn-primary">
+                                                    <i className="fa fa-edit"></i>
+                                                </button>
+                                                <button className="btn btn-sm btn-danger">
+                                                    <i className="fa fa-trash"></i>
+                                                </button>
+                                                {/* 👉 nuevo botón para historial */}
+                                                <Link
+                                                    to={`/admin/usuarios/${u.run}/historial`}
+                                                    className="btn btn-sm btn-secondary"
+                                                >
+                                                    <i className="fa fa-history"></i>
+                                                </Link>
+                                            </div>
+                                        </td>
+                                    </tr>
+                                ))}
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
             </div>
         </div>
     );

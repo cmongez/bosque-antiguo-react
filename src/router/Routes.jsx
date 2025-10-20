@@ -15,7 +15,7 @@ import { Categorias } from '../pages/Categoria'
 import { CompraExitosa } from '../pages/CompraExitosa'
 import { CompraFallida } from '../pages/CompraFallida'
 import { AdminHome } from '../pages/Admin/AdminHome'
-import { AdminLayout } from '../components/AdminLayout'
+import { AdminLayout } from '../components/AdminLayout/AdminLayout'
 import { AdminUsuarios } from '../pages/Admin/AdminUsuarios'
 import { AdminNuevoUsuario } from '../pages/Admin/AdminNuevoUsuario'
 import { AdminHistorialCompras } from '../pages/Admin/AdminHistorialCompras'
@@ -24,6 +24,10 @@ import { AdminBoleta } from '../pages/Admin/AdminBoleta'
 import { AdminProductosCriticos } from '../pages/Admin/AdminProductosCriticos'
 import { AdminReportes } from '../pages/Admin/AdminReportes'
 import { AdminPerfil } from '../pages/Admin/AdminPerfil'
+import { AdminCategorias } from '../pages/admin/AdminCategorias';
+import { AdminCategoriaNueva } from '../pages/admin/AdminCategoriaNueva';
+import { AdminCategoriaEditar } from '../pages/admin/AdminCategoriaEditar';
+
 
 export const RoutesComp = () => {
     return (
@@ -57,6 +61,10 @@ export const RoutesComp = () => {
                         <Route path="productos" element={<AdminProductosCriticos />} />
                         <Route path="reportes" element={<AdminReportes />} />
                         <Route path="perfil" element={<AdminPerfil />} />
+                        <Route path="categorias" element={<AdminCategorias />} />
+                        <Route path="categorias/nueva" element={<AdminCategoriaNueva />} />
+                        <Route path="categorias/editar/:id" element={<AdminCategoriaEditar />} />
+                        <Route path="reportes" element={<AdminReportes />} />
                     </Route>
 
                 </Routes>

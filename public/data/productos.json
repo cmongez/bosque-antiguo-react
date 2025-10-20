@@ -85,7 +85,7 @@
         "descripcion": "Árbol frutal que produce paltas (aguacates).",
         "precio": 18000,
         "stock": 10,
-        "stockCritico": 2,
+        "stockCritico": 11,
         "categoria": "Frutales",
         "img": "./../assets/img/jardineria1.jpg"
     },
