@@ -63,7 +63,7 @@ export const Navbar = () => {
                     </NavLink>
 
                     {/* Ícono usuario */}
-                    <NavLink className="nav-icon position-relative text-decoration-none" to="/admin-home">
+                    <NavLink className="nav-icon position-relative text-decoration-none" to="/admin">
                         <i className="fa fa-fw fa-user text-white mr-3"></i>
                     </NavLink>
                 </div>
