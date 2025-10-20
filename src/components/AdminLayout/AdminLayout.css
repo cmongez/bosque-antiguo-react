@@ -1,0 +1,44 @@
+
+.nav-admin{
+  padding: 0;
+  list-style: none;
+  padding: 20px;
+}
+
+.nav-admin .nav-link {
+  color: #ffffff;
+  padding: 8px 10px;
+  text-decoration: none;
+  display: block;
+  border-radius: 5px;
+  margin-bottom: 10px;
+}
+/* Contenedor general del admin */
+.admin-container {
+  display: flex;
+  min-height: 100vh;
+}
+
+/* Sidebar en escritorio */
+.sidebar-admin {
+  width: 250px;
+  flex-shrink: 0;
+}
+
+/* Ajuste del main */
+.main-admin {
+  flex-grow: 1;
+  padding: 1.5rem;
+}
+
+/* ===== MODO MÓVIL ===== */
+@media (max-width: 991.98px) {
+  .admin-container {
+    display: block; /* Rompe el flex, para que el navbar quede arriba */
+  }
+
+  .main-admin {
+    margin-top: 56px; /* Deja espacio para la navbar fija */
+    padding: 1rem;
+  }
+}
