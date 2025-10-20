@@ -86,7 +86,7 @@ export const AdminProductosCriticos = () => {
                                 {productosCriticos.length === 0 && (
                                     <tr>
                                         <td colSpan="8" className="text-center text-muted py-4">
-                                            ✅ Todos los productos tienen stock suficiente.
+                                            Todos los productos tienen stock suficiente.
                                         </td>
                                     </tr>
                                 )}

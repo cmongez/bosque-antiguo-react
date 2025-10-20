@@ -14,7 +14,7 @@ export const AdminPerfil = () => {
 
     const guardar = (e) => {
         e.preventDefault();
-        alert("Cambios guardados correctamente ✅");
+        alert("Cambios guardados correctamente");
     };
 
     return (

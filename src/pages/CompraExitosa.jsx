@@ -13,7 +13,7 @@ export const CompraExitosa = () => {
             <div className="card shadow-sm">
                 <div className="card-body">
                     <h3 className="text-success mb-3">
-                        ✅ Se ha realizado la compra. <small className="text-muted">nro #{orderId}</small>
+                        Se ha realizado la compra. <small className="text-muted">nro #{orderId}</small>
                     </h3>
 
                     <h5 className="mb-3">Dirección de entrega</h5>

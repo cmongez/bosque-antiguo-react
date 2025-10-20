@@ -13,7 +13,7 @@ export const CompraFallida = () => {
             <div className="card shadow-sm">
                 <div className="card-body">
                     <h3 className="text-danger mb-3">
-                        ❌ No se pudo realizar el pago. <small className="text-muted">nro #{orderId}</small>
+                        No se pudo realizar el pago. <small className="text-muted">nro #{orderId}</small>
                     </h3>
 
                     <div className="text-center mb-4">

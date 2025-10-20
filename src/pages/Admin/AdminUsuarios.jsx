@@ -68,7 +68,7 @@ export const AdminUsuarios = () => {
                                                 <button className="btn btn-sm btn-danger">
                                                     <i className="fa fa-trash"></i>
                                                 </button>
-                                                {/* 👉 nuevo botón para historial */}
+                                                {/*  nuevo botón para historial */}
                                                 <Link
                                                     to={`/admin/usuarios/${u.run}/historial`}
                                                     className="btn btn-sm btn-secondary"

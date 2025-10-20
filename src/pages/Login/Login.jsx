@@ -1,5 +1,5 @@
 import React from 'react'
-import './Login.css' // 👈 crea este archivo para estilos
+import './Login.css' // crea este archivo para estilos
 
 export const Login = () => {
     return (

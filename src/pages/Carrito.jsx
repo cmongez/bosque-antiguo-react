@@ -52,7 +52,7 @@ export const Carrito = () => {
             <h2 className="mb-4">Mi carrito de compras</h2>
 
             {carrito.length === 0 ? (
-                <p>No hay productos en el carrito 😢</p>
+                <p>No hay productos en el carrito </p>
             ) : (
                 <div className="row">
                     {/* Lista de productos */}

@@ -112,7 +112,7 @@ export const AdminReportes = () => {
                 <div className="card-header bg-danger text-white">Productos en stock crítico</div>
                 <div className="card-body">
                     {!criticos.length ? (
-                        <p className="text-muted mb-0">✅ No hay productos en estado crítico.</p>
+                        <p className="text-muted mb-0"> No hay productos en estado crítico.</p>
                     ) : (
                         <div className="table-responsive">
                             <table className="table align-middle">

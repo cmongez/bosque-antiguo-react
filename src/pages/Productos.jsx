@@ -31,7 +31,7 @@ export const Productos = () => {
     // Guardar carrito actualizado
     localStorage.setItem('carrito', JSON.stringify(cart))
 
-    // 🔥 Notificar al Navbar para que actualice el contador
+    //  Notificar al Navbar para que actualice el contador
     window.dispatchEvent(new Event('updateCart'))
 
     // Feedback visual

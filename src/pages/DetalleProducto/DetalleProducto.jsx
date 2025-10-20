@@ -42,7 +42,7 @@ export const DetalleProducto = () => {
         else cart.push({ ...product, cantidad: qty })
         saveCart(cart)
 
-        // 🔥 Actualiza contador en el Navbar
+        // Actualiza contador en el Navbar
         window.dispatchEvent(new Event('updateCart'))
 
         alert(`${product.nombre} añadido al carrito`)
