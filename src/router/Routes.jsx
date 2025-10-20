@@ -27,6 +27,7 @@ import { AdminPerfil } from '../pages/Admin/AdminPerfil'
 import { AdminCategorias } from '../pages/admin/AdminCategorias';
 import { AdminCategoriaNueva } from '../pages/admin/AdminCategoriaNueva';
 import { AdminCategoriaEditar } from '../pages/admin/AdminCategoriaEditar';
+import { Error404 } from '../pages/Error404'
 
 
 export const RoutesComp = () => {
@@ -35,6 +36,7 @@ export const RoutesComp = () => {
             <BrowserRouter>
                 <Routes>
                     <Route element={<Layout />}>
+                        <Route path='*' element={<Error404/>}/>
                         <Route path='/' element={<Navigate to='/home' />} /> {/*Cada vez que se entra a la raíz redirige a Home*/}
                         <Route path='/home' element={<Home />} />
                         <Route path='/contacto' element={<Contacto />} />
