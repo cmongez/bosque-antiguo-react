@@ -1,13 +1,53 @@
+import authApi from '../../apis/authApi';
+import { useNavigate } from 'react-router-dom';
+import { useState } from 'react';
 import React from 'react'
 import './Login.css' // crea este archivo para estilos
 
 export const Login = () => {
+    const navigate = useNavigate();
+    const [email, setEmail] = useState('');
+    const [password, setPassword] = useState('');
+    const [errorMsg, setErrorMsg] = useState(null);
+
+    const handleSubmit = async (e) => {
+        e.preventDefault();
+        setErrorMsg(null);
+
+        try {
+            const body = {
+                email: email,
+                password: password
+            };
+
+            // petición POST al backend con JSON
+            const resp = await authApi.post("/auth/login", body);
+
+            // datos que retorna tu backend
+            const {
+                token,        // o access_token dependiendo de cómo lo llamas
+                role,
+                refreshToken
+            } = resp.data;
+
+            // Guardar en localStorage
+            localStorage.setItem("token", token);
+            localStorage.setItem("refreshToken", refreshToken);
+            localStorage.setItem("role", role);
+
+            // Redirige a home
+            navigate("/home");
+
+        } catch (error) {
+            setErrorMsg("Correo o contraseña incorrectos.");
+        }
+    };
     return (
         <div className="container flex-grow-1 d-flex justify-content-center align-items-center mt-4">
             <div className="card p-4 rounded-4 shadow-sm w-100 login-card">
                 <h3 className="text-center mb-4">Iniciar Sesión</h3>
 
-                <form id="loginForm">
+                <form id="loginForm" onSubmit={handleSubmit}>
                     {/* Correo */}
                     <div className="mb-3">
                         <label htmlFor="correoLogin" className="form-label">
@@ -15,6 +55,8 @@ export const Login = () => {
                         </label>
                         <input
                             type="email"
+                            value={email}
+                            onChange={(e) => setEmail(e.target.value)}
                             className="form-control"
                             id="correoLogin"
                             placeholder="ejemplo@duoc.cl"
@@ -29,7 +71,8 @@ export const Login = () => {
                         </label>
                         <input
                             type="password"
-                            className="form-control"
+                            value={password}                            className="form-control"
+                            onChange={(e) => setPassword(e.target.value)}
                             id="passwordLogin"
                             placeholder="Ingresa tu contraseña"
                             required
