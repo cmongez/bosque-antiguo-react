@@ -10,6 +10,7 @@ import { DetalleProducto } from '../pages/DetalleProducto/DetalleProducto'
 import { Login } from '../pages/Login/Login'
 import { Nosotros } from '../pages/Nosotros/Nosotros'
 import { Productos } from '../pages/Productos'
+import { AdminProductos } from '../pages/Admin/AdminProductos'
 import { CheckOut } from '../pages/CheckOut'
 import { Categorias } from '../pages/Categoria'
 import { CompraExitosa } from '../pages/CompraExitosa'
@@ -28,6 +29,7 @@ import { AdminCategorias } from '../pages/admin/AdminCategorias';
 import { AdminCategoriaNueva } from '../pages/admin/AdminCategoriaNueva';
 import { AdminCategoriaEditar } from '../pages/admin/AdminCategoriaEditar';
 import { Error404 } from '../pages/Error404'
+import { AdminProductoNuevo } from '../pages/Admin/AdminProductoNuevo'
 
 
 export const RoutesComp = () => {
@@ -60,7 +62,10 @@ export const RoutesComp = () => {
                         <Route path="usuarios/:id/historial" element={<AdminHistorialCompras />} />
                         <Route path="ordenes" element={<AdminOrdenes />} />
                         <Route path="ordenes/:id" element={<AdminBoleta />} />
-                        <Route path="productos" element={<AdminProductosCriticos />} />
+                        <Route path="productos-criticos" element={<AdminProductosCriticos />} />
+                        <Route path="productos" element={<AdminProductos />} />
+                        <Route path="productos/nuevo" element={<AdminProductoNuevo />} />
+
                         <Route path="reportes" element={<AdminReportes />} />
                         <Route path="perfil" element={<AdminPerfil />} />
                         <Route path="categorias" element={<AdminCategorias />} />

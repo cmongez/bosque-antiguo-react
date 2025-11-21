@@ -26,6 +26,11 @@ export const AdminLayout = () => {
                         </Link>
                     </li>
                     <li>
+                        <Link to="/admin/productos-criticos" className={`nav-link text-white ${isActive("/admin/productos")}`}>
+                            <i className="fa fa-box me-2"></i>Stock Crítico
+                        </Link>
+                    </li>
+                     <li>
                         <Link to="/admin/productos" className={`nav-link text-white ${isActive("/admin/productos")}`}>
                             <i className="fa fa-box me-2"></i>Productos
                         </Link>

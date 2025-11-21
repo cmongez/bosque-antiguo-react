@@ -24,3 +24,8 @@ export const getProducts = async () => {
   const data = Array.isArray(res.data) ? res.data : (res.data?.content ?? []);
   return data.map(adaptProduct);
 };
+export const getCategories = async () => {
+  const res = await api.get("/categories"); // /api/v1/categories
+  const data = Array.isArray(res.data) ? res.data : (res.data?.content ?? []);
+  return data
+};

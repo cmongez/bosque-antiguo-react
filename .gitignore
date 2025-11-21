@@ -24,3 +24,4 @@ dist-ssr
 *.sw?
 # en la raíz del proyecto
 coverage/
+.vite
