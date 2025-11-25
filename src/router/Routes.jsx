@@ -30,6 +30,7 @@ import { AdminCategoriaNueva } from '../pages/admin/AdminCategoriaNueva';
 import { AdminCategoriaEditar } from '../pages/admin/AdminCategoriaEditar';
 import { Error404 } from '../pages/Error404'
 import { AdminProductoNuevo } from '../pages/Admin/AdminProductoNuevo'
+import { AdminProductoEditar } from '../pages/Admin/AdminProductoEditar'
 
 
 export const RoutesComp = () => {
@@ -65,6 +66,8 @@ export const RoutesComp = () => {
                         <Route path="productos-criticos" element={<AdminProductosCriticos />} />
                         <Route path="productos" element={<AdminProductos />} />
                         <Route path="productos/nuevo" element={<AdminProductoNuevo />} />
+                        <Route path="productos/editar/:id" element={<AdminProductoEditar />} />
+
 
                         <Route path="reportes" element={<AdminReportes />} />
                         <Route path="perfil" element={<AdminPerfil />} />

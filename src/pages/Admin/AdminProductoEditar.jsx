@@ -1,9 +1,13 @@
 import { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
-import { getCategories,createProduct} from "../../api/products";
+import {
+  getCategories,
+  updateProduct,
+  getProductById,
+} from "../../api/products";
+import { useParams } from "react-router-dom";
 
-
-export const AdminProductoNuevo = () => {
+export const AdminProductoEditar = () => {
   const navigate = useNavigate();
   const [categorias, setCategorias] = useState([]);
   const [form, setForm] = useState({
@@ -13,6 +17,33 @@ export const AdminProductoNuevo = () => {
     imagenUrl: "",
     categoriaId: "",
   });
+
+  const { id } = useParams(); // ← aquí tienes el ID
+
+  useEffect(() => {
+    console.log("ID desde useParams:", id);
+    if (!id) return;
+
+    const cargarProducto = async () => {
+      try {
+        const data = await getProductById(id);
+        console.log("Producto cargado para editar:", data);
+
+        setForm({
+          nombre: data.nombre ?? "",
+          descripcion: data.descripcion ?? "",
+          precio: data.precio ?? "",
+          imagenUrl: data.imagenUrl ?? "",
+          categoriaId: data.categoria?.id ?? "",
+        });
+      } catch (error) {
+        console.error("Error al cargar producto por id:", error);
+        alert("No se pudo cargar el producto");
+      }
+    };
+
+    cargarProducto();
+  }, [id]);
 
   const handleChange = (e) => {
     setForm({
@@ -30,7 +61,7 @@ export const AdminProductoNuevo = () => {
       return;
     }
 
-    const nuevoProducto = {
+    const productoEditado = {
       nombre: form.nombre,
       descripcion: form.descripcion,
       precio: parseFloat(form.precio),
@@ -42,10 +73,9 @@ export const AdminProductoNuevo = () => {
 
     try {
       // Aquí luego conectas al backend con axios
-      console.log("Enviando producto:", nuevoProducto);
+      console.log("Enviando producto:", productoEditado);
 
-      
-      await createProduct(nuevoProducto);
+      await updateProduct(id,productoEditado);
 
       alert("Producto creado correctamente");
       navigate("/admin/productos");
@@ -61,14 +91,14 @@ export const AdminProductoNuevo = () => {
         setCategorias(data);
       } catch (error) {
         console.error("Error al cargar categoria: ", error);
-      } 
+      }
     };
 
     cargarCategorias();
   }, []);
   return (
     <div className="container py-3">
-      <h2 className="mb-4">+ Nuevo producto</h2>
+      <h2 className="mb-4">+ Editar producto</h2>
 
       <form className="card p-4" onSubmit={handleSubmit}>
         {/* Nombre */}
@@ -138,20 +168,18 @@ export const AdminProductoNuevo = () => {
             required
           >
             <option value="">Selecciona una categoría</option>
-            {categorias.map((c)=>(
-                <option key={c.id} value={c.id}>
-                    {c.nombre}
-                </option>
-            )
-
-            )}
+            {categorias.map((c) => (
+              <option key={c.id} value={c.id}>
+                {c.nombre}
+              </option>
+            ))}
           </select>
         </div>
 
         {/* Botones */}
         <div className="d-flex gap-2 mt-3">
           <button className="btn btn-success" type="submit">
-            Guardar
+            Actualizar
           </button>
           <button
             className="btn btn-secondary"

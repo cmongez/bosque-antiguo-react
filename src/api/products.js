@@ -24,8 +24,35 @@ export const getProducts = async () => {
   const data = Array.isArray(res.data) ? res.data : (res.data?.content ?? []);
   return data.map(adaptProduct);
 };
+export const getProductById = async (id) => {
+  const res = await api.get(`/products/${id}`);
+  return res.data; // ← devuelves el objeto directamente
+};
+
+export const getProductsDisponibles = async () => {
+  const res = await api.get("/products?disponibles=true"); // /api/v1/products
+  const data = Array.isArray(res.data) ? res.data : (res.data?.content ?? []);
+  return data.map(adaptProduct);
+};
 export const getCategories = async () => {
   const res = await api.get("/categories"); // /api/v1/categories
   const data = Array.isArray(res.data) ? res.data : (res.data?.content ?? []);
   return data
+
+
+};
+
+export const createProduct = async (product) =>{
+  const res = await api.post("/products",product); // /api/v1/products
+  const data = Array.isArray(res.data) ? res.data : (res.data?.content ?? []);
+  return data
+};
+export const updateProduct = async (id, product) => {
+  const res = await api.put(`/products/${id}`, product);
+};
+
+export const deleteProduct = async (id) => {
+  const res = await api.delete(`/products/${id}`); // /api/v1/products/id
+  const data = Array.isArray(res.data) ? res.data : (res.data?.content ?? []);
+  return data.map(adaptProduct);
 };
