@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from 'react'
 import { ProductCard } from '../components/ProductCard'
-import { getProducts } from '../api/products'
+import { getProductsDisponibles } from '../api/products'
 
 export const Productos = () => {
   const [productos, setProductos] = useState([])
@@ -9,7 +9,7 @@ export const Productos = () => {
   useEffect(() => {
     const cargarProductos = async () => {
       try {
-        const data = await getProducts()
+        const data = await getProductsDisponibles()
         setProductos(data)
         localStorage.setItem("productos", JSON.stringify(data))
       } catch (error) {
