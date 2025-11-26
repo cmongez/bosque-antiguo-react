@@ -61,7 +61,7 @@ export const CheckOut = () => {
     }
     const isValid = !errors.name && !errors.email && !errors.address
 
-    const pay = (e) => {
+    const pay = async (e) => {
         e.preventDefault()
         setTouched({ name: true, email: true, address: true })
         if (!isValid) return
@@ -69,15 +69,31 @@ export const CheckOut = () => {
         localStorage.setItem('checkoutUser', JSON.stringify(form))
         setIsPaying(true)
 
-        if (total > 0) {
+        try {
+            // Crear orden en el microservicio de ventas
+            const orderData = {
+                detalles: rows.map(row => ({
+                    productoId: row.codigo, // Extraer ID numérico
+                    cantidad: row.cantidad
+                }))
+            };
+
+            const { createOrder } = await import('../api/orders');
+            const orderResponse = await createOrder(orderData);
+            console.log('orderResponse', orderResponse)
+            // Limpiar carrito solo si la orden se creó exitosamente
             localStorage.setItem('carrito', JSON.stringify([]))
             window.dispatchEvent(new Event('updateCart'))
 
+            nav(`/compra-exitosa/${orderResponse.id}`, { 
+                state: { form, rows, total, order: orderResponse } 
+            })
+        } catch (error) {
+            console.error('Error al procesar la orden:', error)
             const orderId = Date.now()
-            nav(`/compra-exitosa/${orderId}`, { state: { form, rows, total } })
-        } else {
-            const orderId = Date.now()
-            nav(`/compra-fallida/${orderId}`, { state: { form, rows, total } })
+            nav(`/compra-fallida/${orderId}`, { 
+                state: { form, rows, total, error: error.message } 
+            })
         }
     }
 
