@@ -7,8 +7,24 @@ export default defineConfig({
   base: "./",
   server: {
     proxy: {
-      "/api": {
-        target: "http://localhost:8080",
+      "/api/v1/products": {
+        target: "http://localhost:8080", // Microservicio productos
+        changeOrigin: true,
+      },
+      "/api/v1/categories": {
+        target: "http://localhost:8080", // Microservicio productos  
+        changeOrigin: true,
+      },
+      "/api/v1/sales": {
+        target: "http://localhost:8081", // Microservicio ventas
+        changeOrigin: true,
+      },
+      "/api/v1/auth": {
+        target: "http://localhost:8082", // Microservicio usuario
+        changeOrigin: true,
+      },
+      "/api/v1/reports": {
+        target: "http://localhost:8083", // Microservicio reportes
         changeOrigin: true,
       },
     },
