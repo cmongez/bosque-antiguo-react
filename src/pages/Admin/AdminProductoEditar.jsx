@@ -1,11 +1,12 @@
 import { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import {
-  getCategories,
   updateProduct,
   getProductById,
 } from "../../api/products";
 import { useParams } from "react-router-dom";
+import { getCategories } from "../../api/categories";
+
 
 export const AdminProductoEditar = () => {
   const navigate = useNavigate();

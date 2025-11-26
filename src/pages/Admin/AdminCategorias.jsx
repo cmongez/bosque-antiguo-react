@@ -1,134 +1,110 @@
-import React, { useEffect, useMemo, useState } from "react";
+// src/pages/Admin/AdminCategorias.jsx
+import React, { useEffect, useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
+import { getCategories, deleteCategory } from "../../api/categories";
 
-// helpers LS
-const readLS = (k, fb) => {
-    try { const r = localStorage.getItem(k); return r ? JSON.parse(r) : fb; } catch { return fb; }
-};
-const writeLS = (k, v) => localStorage.setItem(k, JSON.stringify(v));
-
-// slug
 const slugify = (s) =>
-    (s || "")
-        .toString()
-        .normalize("NFD").replace(/[\u0300-\u036f]/g, "")
-        .toLowerCase()
-        .replace(/[^a-z0-9]+/g, "-")
-        .replace(/(^-|-$)+/g, "");
+  (s || "")
+    .toString()
+    .normalize("NFD")
+    .replace(/[\u0300-\u036f]/g, "")
+    .toLowerCase()
+    .replace(/[^a-z0-9]+/g, "-")
+    .replace(/(^-|-$)+/g, "");
 
 export const AdminCategorias = () => {
-    const nav = useNavigate();
-    const [cats, setCats] = useState(() => readLS("categorias", []));
-    const productos = readLS("productos", []); // por si existe
+  const nav = useNavigate();
+  const [cats, setCats] = useState([]);
+  const [loading, setLoading] = useState(true);
 
-    // si no hay categorías, las inferimos de productos.json (en /public/data) una sola vez
-    useEffect(() => {
-        if (!cats.length) {
-            fetch("/data/productos.json")
-                .then(r => r.json())
-                .then(data => {
-                    const set = new Set();
-                    data.forEach(p => p?.categoria && set.add(p.categoria));
-                    const inferidas = Array.from(set).map((nombre) => ({
-                        id: crypto.randomUUID(),
-                        nombre,
-                        slug: slugify(nombre),
-                        descripcion: "",
-                        activo: true,
-                    }));
-                    if (inferidas.length) {
-                        setCats(inferidas);
-                        writeLS("categorias", inferidas);
-                    }
-                })
-                .catch(() => { });
-        }
-        // eslint-disable-next-line react-hooks/exhaustive-deps
-    }, []);
+  const cargarCategorias = async () => {
+    try {
+      const data = await getCategories();
+      setCats(data);
+    } catch (error) {
+      console.error("Error al cargar categorías:", error);
+      alert("No se pudieron cargar las categorías");
+    } finally {
+      setLoading(false);
+    }
+  };
 
-    const totalPorCategoria = useMemo(() => {
-        const map = {};
-        productos.forEach(p => {
-            if (!p?.categoria) return;
-            map[p.categoria] = (map[p.categoria] || 0) + 1;
-        });
-        return map;
-    }, [productos]);
+  useEffect(() => {
+    cargarCategorias();
+  }, []);
 
-    const toggleActiva = (id) => {
-        const next = cats.map(c => c.id === id ? { ...c, activo: !c.activo } : c);
-        setCats(next);
-        writeLS("categorias", next);
-    };
+  const eliminar = async (id) => {
+    if (!window.confirm("¿Desactivar esta categoría?")) return;
+    try {
+      await deleteCategory(id);
+      await cargarCategorias();
+    } catch (error) {
+      console.error("Error al desactivar categoría:", error);
+      alert("No se pudo desactivar la categoría");
+    }
+  };
 
-    const eliminar = (id) => {
-        if (!confirm("¿Eliminar esta categoría?")) return;
-        const next = cats.filter(c => c.id !== id);
-        setCats(next);
-        writeLS("categorias", next);
-    };
+  if (loading) return <p className="text-center py-4">Cargando categorías...</p>;
 
-    return (
-        <div className="container-fluid py-3">
-            <div className="d-flex justify-content-between align-items-center mb-4">
-                <h2 className="mb-0"><i className="fa fa-tags me-2"></i>Categorías</h2>
-                <div>
-                    <Link to="/admin/categorias/nueva" className="btn btn-success">
-                        <i className="fa fa-plus me-2"></i>Nueva categoría
-                    </Link>
-                </div>
-            </div>
+  return (
+    <div className="container py-3">
+      <div className="d-flex justify-content-between align-items-center mb-3">
+        <h2>Categorías</h2>
+        <Link to="/admin/categorias/nueva" className="btn btn-success">
+          + Nueva categoría
+        </Link>
+      </div>
 
-            <div className="card shadow-sm">
-                <div className="card-body">
-                    {!cats.length ? (
-                        <p className="text-muted mb-0">Sin categorías aún.</p>
-                    ) : (
-                        <div className="table-responsive">
-                            <table className="table align-middle">
-                                <thead className="table-dark">
-                                    <tr>
-                                        <th>Nombre</th>
-                                        <th>Slug</th>
-                                        <th className="text-center">Activa</th>
-                                        <th className="text-center"># Productos</th>
-                                        <th className="text-end">Acciones</th>
-                                    </tr>
-                                </thead>
-                                <tbody>
-                                    {cats.map(c => (
-                                        <tr key={c.id}>
-                                            <td>{c.nombre}</td>
-                                            <td><span className="badge text-bg-secondary">{c.slug}</span></td>
-                                            <td className="text-center">
-                                                <span className={`badge ${c.activo ? "text-bg-success" : "text-bg-secondary"}`}>
-                                                    {c.activo ? "Sí" : "No"}
-                                                </span>
-                                            </td>
-                                            <td className="text-center">{totalPorCategoria[c.nombre] || 0}</td>
-                                            <td className="text-end">
-                                                <button onClick={() => toggleActiva(c.id)} className="btn btn-sm btn-outline-warning me-2">
-                                                    {c.activo ? "Desactivar" : "Activar"}
-                                                </button>
-                                                <Link to={`/admin/categorias/editar/${c.id}`} className="btn btn-sm btn-primary me-2">
-                                                    <i className="fa fa-edit"></i>
-                                                </Link>
-                                                <button onClick={() => eliminar(c.id)} className="btn btn-sm btn-danger">
-                                                    <i className="fa fa-trash"></i>
-                                                </button>
-                                            </td>
-                                        </tr>
-                                    ))}
-                                </tbody>
-                            </table>
-                        </div>
-                    )}
+      {cats.length === 0 ? (
+        <p>No hay categorías todavía.</p>
+      ) : (
+        <table className="table">
+          <thead>
+            <tr>
+              <th>ID</th>
+              <th>Nombre</th>
+              <th>Slug</th>
+              <th>Activa</th>
+              <th className="text-end">Acciones</th>
+            </tr>
+          </thead>
+          <tbody>
+            {cats.map((c) => (
+              <tr key={c.id}>
+                <td>{c.id}</td>
+                <td>{c.nombre}</td>
+                <td>
+                  <span className="badge text-bg-secondary">
+                    {slugify(c.nombre)}
+                  </span>
+                </td>
+                <td>{c.activo ? "Sí" : "No"}</td>
+                <td className="text-end">
+                  <Link
+                    to={`/admin/categorias/editar/${c.id}`}
+                    className="btn btn-sm btn-primary me-2"
+                  >
+                    Editar
+                  </Link>
+                  <button
+                    className="btn btn-sm btn-danger"
+                    onClick={() => eliminar(c.id)}
+                  >
+                    Desactivar
+                  </button>
+                </td>
+              </tr>
+            ))}
+          </tbody>
+        </table>
+      )}
 
-                    <button className="btn btn-outline-secondary mt-3" onClick={() => nav(-1)}>
-                        <i className="fa fa-arrow-left me-2"></i>Volver
-                    </button>
-                </div>
-            </div>
-        </div>
-    );
+      <button
+        className="btn btn-outline-secondary mt-3"
+        onClick={() => nav(-1)}
+      >
+        Volver
+      </button>
+    </div>
+  );
 };

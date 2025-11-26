@@ -1,6 +1,7 @@
 import { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
-import { getCategories,createProduct} from "../../api/products";
+import { createProduct } from "../../api/products";
+import { getCategories } from "../../api/categories";
 
 
 export const AdminProductoNuevo = () => {
