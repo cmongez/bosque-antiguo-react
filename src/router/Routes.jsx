@@ -31,6 +31,7 @@ import { AdminCategoriaEditar } from '../pages/admin/AdminCategoriaEditar';
 import { Error404 } from '../pages/Error404'
 import { AdminProductoNuevo } from '../pages/Admin/AdminProductoNuevo'
 import { AdminProductoEditar } from '../pages/Admin/AdminProductoEditar'
+import { MisCompras } from '../pages/MisCompras'
 
 
 export const RoutesComp = () => {
@@ -54,6 +55,7 @@ export const RoutesComp = () => {
                         <Route path='/categoria' element={<Categorias />} />
                         <Route path="/compra-exitosa/:orderId" element={<CompraExitosa />} />
                         <Route path="/compra-fallida/:orderId" element={<CompraFallida />} />
+                        <Route path="/mis-compras" element={<MisCompras />} />
 
                     </Route>
                     <Route path="/admin" element={<AdminLayout />}>
