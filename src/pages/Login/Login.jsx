@@ -1,8 +1,8 @@
 import authApi from '../../apis/authApi';
 import { useNavigate } from 'react-router-dom';
 import { useState } from 'react';
-import React from 'react'
-import './Login.css' // crea este archivo para estilos
+import React from 'react';
+import './Login.css';
 
 export const Login = () => {
     const navigate = useNavigate();
@@ -17,31 +17,51 @@ export const Login = () => {
         try {
             const body = {
                 email: email,
-                password: password
+                password: password,
             };
 
             // petición POST al backend con JSON
-            const resp = await authApi.post("/auth/login", body);
+            const resp = await authApi.post('/auth/login', body);
+
+            console.log('Respuesta login:', resp.data); // <- para ver qué llega
 
             // datos que retorna tu backend
             const {
                 token,        // o access_token dependiendo de cómo lo llamas
-                role,
-                refreshToken
+                refreshToken,
+                role,         // algunas APIs lo envían así
+                roles,        // otras como array
+                authorities,  // otras como [{ authority: "ROLE_ADMIN" }]
             } = resp.data;
 
-            // Guardar en localStorage
-            localStorage.setItem("token", token);
-            localStorage.setItem("refreshToken", refreshToken);
-            localStorage.setItem("role", role);
+            // --------- detectar el rol final de forma flexible ---------
+            let finalRole = role || '';
+
+            if (!finalRole && Array.isArray(roles) && roles.length > 0) {
+                finalRole = roles[0]; // por ejemplo "ADMIN" o "ROLE_ADMIN"
+            }
+
+            if (!finalRole && Array.isArray(authorities) && authorities.length > 0) {
+                finalRole = authorities[0].authority; // por ejemplo "ROLE_ADMIN"
+            }
+
+            // Guardar en localStorage (limpiando primero por si había algo viejo)
+            localStorage.removeItem('token');
+            localStorage.removeItem('refreshToken');
+            localStorage.removeItem('role');
+
+            if (token) localStorage.setItem('token', token);
+            if (refreshToken) localStorage.setItem('refreshToken', refreshToken);
+            if (finalRole) localStorage.setItem('role', finalRole);
 
             // Redirige a home
-            navigate("/home");
-
+            navigate('/home');
         } catch (error) {
-            setErrorMsg("Correo o contraseña incorrectos.");
+            console.error(error);
+            setErrorMsg('Correo o contraseña incorrectos.');
         }
     };
+
     return (
         <div className="container flex-grow-1 d-flex justify-content-center align-items-center mt-4">
             <div className="card p-4 rounded-4 shadow-sm w-100 login-card">
@@ -71,7 +91,8 @@ export const Login = () => {
                         </label>
                         <input
                             type="password"
-                            value={password}                            className="form-control"
+                            value={password}
+                            className="form-control"
                             onChange={(e) => setPassword(e.target.value)}
                             id="passwordLogin"
                             placeholder="Ingresa tu contraseña"
@@ -100,6 +121,13 @@ export const Login = () => {
                         </label>
                     </div>
 
+                    {/* Error */}
+                    {errorMsg && (
+                        <div className="alert alert-danger py-2" role="alert">
+                            {errorMsg}
+                        </div>
+                    )}
+
                     {/* Botón */}
                     <button type="submit" className="btn btn-success w-100">
                         Ingresar
@@ -114,5 +142,5 @@ export const Login = () => {
                 </p>
             </div>
         </div>
-    )
-}
+    );
+};
