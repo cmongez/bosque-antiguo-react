@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from "react";
 import { Link } from "react-router-dom";
-import { getProducts,deleteProduct } from "../../api/products";
+import { getProducts, updateProduct } from "../../api/products";
 
 export const AdminProductos = () => {
   const [productos, setProductos] = useState([]);
@@ -28,17 +28,24 @@ export const AdminProductos = () => {
       currency: "CLP",
     }).format(n);
 
-  const handleDelete = async (productId) => {
-    const confirmar = window.confirm(
-      "¿Seguro que deseas eliminar este producto?"
-    );
-    if (!confirmar) return;
-
-    await deleteProduct(productId);
-    alert("Producto eliminado correctamente");
-
-    // refrescas lista si es necesario
-    cargarProductos();
+  const toggleDisponible = async (productId) => {
+    try {
+      const producto = productos.find(p => p.codigo === productId);
+      if (!producto) return;
+      
+      // Actualizar en el backend
+      await updateProduct(productId, { disponible: !producto.disponible });
+      
+      // Recargar la lista de productos desde el backend
+      const data = await getProducts();
+      setProductos(data);
+      localStorage.setItem("productos", JSON.stringify(data));
+      
+      alert(`Producto ${!producto.disponible ? 'activado' : 'desactivado'} correctamente`);
+    } catch (error) {
+      console.error('Error al cambiar disponibilidad:', error);
+      alert('Error al actualizar el producto');
+    }
   };
   return (
     <div className="container-fluid py-3">
@@ -64,19 +71,19 @@ export const AdminProductos = () => {
                   <th>Nombre</th>
                   <th>Categoría</th>
                   <th>Precio</th>
+                  <th>Stock</th>
                   <th>Disponible</th>
-                  <th>Acción</th>
+                  <th>Acciones</th>
                 </tr>
               </thead>
               <tbody>
                 {productos.map((p) => {
-                  // Cambiamos './../' → './../../' para que coincida con la profundidad real
-                  const fixedImgPath = p.img.replace("./../", "./../../");
-                  const imageUrl = new URL(fixedImgPath, import.meta.url).href;
+                  // Usar la imagen directamente desde el backend o placeholder
+                  const imageUrl = p.img || 'https://via.placeholder.com/60x60?text=Sin+Imagen';
 
                   return (
                     <tr key={p.codigo}>
-                      <td>{p.codigo}</td>
+                      <td>#{p.codigo}</td>
                       <td>
                         <img
                           src={imageUrl}
@@ -87,23 +94,50 @@ export const AdminProductos = () => {
                             objectFit: "cover",
                             borderRadius: "5px",
                           }}
+                          onError={(e) => {
+                            e.target.src = 'https://via.placeholder.com/60x60?text=Sin+Imagen';
+                          }}
                         />
                       </td>
-                      <td>{p.nombre}</td>
-                      <td>{p.categoria}</td>
-                      <td>{clp(p.precio)}</td>
-                      <td>{p.disponible? "Si": "No"}</td>
                       <td>
-                        <div className="btn-group">
+                        <div>
+                          <strong>{p.nombre}</strong>
+                          {p.descripcion && <div className="text-muted small">{p.descripcion.substring(0, 50)}...</div>}
+                        </div>
+                      </td>
+                      <td>
+                        <span className="badge bg-secondary">{p.categoria}</span>
+                      </td>
+                      <td>{clp(p.precio)}</td>
+                      <td>
+                        <div className="d-flex flex-column">
+                          <span className={`badge ${p.stock <= (p.stockCritico || 5) ? 'bg-warning text-dark' : 'bg-info'}`}>
+                            {p.stock || 0} unidades
+                          </span>
+                          {p.stock <= (p.stockCritico || 5) && (
+                            <small className="text-warning">⚠️ Stock bajo</small>
+                          )}
+                        </div>
+                      </td>
+                      <td>
+                        <span className={`badge ${p.disponible ? 'bg-success' : 'bg-danger'}`}>
+                          {p.disponible ? "Sí" : "No"}
+                        </span>
+                      </td>
+                      <td>
+                        <div className="btn-group" role="group">
+                          <button 
+                            onClick={() => toggleDisponible(p.codigo)} 
+                            className={`btn btn-sm ${p.disponible ? 'btn-outline-warning' : 'btn-outline-success'}`}
+                            title={p.disponible ? 'Desactivar producto' : 'Activar producto'}>
+                            {p.disponible ? 'Desactivar' : 'Activar'}
+                          </button>
                           <Link 
-                          to={`/admin/productos/editar/${p.codigo}`}
-                          className="btn btn-sm btn-primary">
+                            to={`/admin/productos/editar/${p.codigo}`}
+                            className="btn btn-sm btn-outline-primary"
+                            title="Editar producto">
                             <i className="fa fa-edit"></i>
                           </Link>
-                          <button className="btn btn-sm btn-danger" onClick={()=> handleDelete(p.codigo)}>
-                            <i className="fa fa-trash"></i>
-                          </button>
-                        
                         </div>
                       </td>
                     </tr>

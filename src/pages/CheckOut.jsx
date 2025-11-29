@@ -73,9 +73,7 @@ export const CheckOut = () => {
             // Crear orden en el microservicio de ventas
             const orderData = {
                 detalles: rows.map(row => ({
-                    productoId: typeof row.codigo === 'string' 
-                        ? parseInt(row.codigo.replace(/\D/g, '')) || 1 
-                        : parseInt(row.codigo) || 1,
+                    productoId: parseInt(row.codigo) || 1, // Usar directamente el código como ID
                     cantidad: row.cantidad
                 }))
             };

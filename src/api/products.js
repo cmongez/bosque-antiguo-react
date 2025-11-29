@@ -63,6 +63,7 @@ export const createCategory = async (category) => {
 
 export const updateProduct = async (id, product) => {
   const res = await api.put(`/products/${id}`, product);
+  return res.data;
 };
 
 export const deleteProduct = async (id) => {
