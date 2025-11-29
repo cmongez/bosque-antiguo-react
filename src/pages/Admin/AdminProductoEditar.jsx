@@ -24,13 +24,11 @@ export const AdminProductoEditar = () => {
   const { id } = useParams(); // ← aquí tienes el ID
 
   useEffect(() => {
-    console.log("ID desde useParams:", id);
     if (!id) return;
 
     const cargarProducto = async () => {
       try {
         const data = await getProductById(id);
-        console.log("Producto cargado para editar:", data);
 
         setForm({
           nombre: data.nombre ?? "",
@@ -60,7 +58,6 @@ export const AdminProductoEditar = () => {
       parsedValue = value === '' ? '' : value;
     }
     
-    console.log(`Actualizando ${name}:`, parsedValue); // Debug
     
     setForm({
       ...form,
@@ -91,9 +88,6 @@ export const AdminProductoEditar = () => {
     };
 
     try {
-      // Aquí luego conectas al backend con axios
-      console.log("Enviando producto:", productoEditado);
-
       await updateProduct(id,productoEditado);
 
       alert("Producto actualizado correctamente");

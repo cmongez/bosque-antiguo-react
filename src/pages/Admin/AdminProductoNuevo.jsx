@@ -47,10 +47,6 @@ export const AdminProductoNuevo = () => {
     };
 
     try {
-      // Aquí luego conectas al backend con axios
-      console.log("Enviando producto:", nuevoProducto);
-
-      
       await createProduct(nuevoProducto);
 
       alert("Producto creado correctamente");

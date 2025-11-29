@@ -32,8 +32,7 @@ export const AdminCategoriaNuevaBackend = () => {
     };
 
     try {
-      const resultado = await createCategory(nuevaCategoria);
-      console.log("Categoría creada:", resultado);
+      await createCategory(nuevaCategoria);
       
       alert("Categoría creada correctamente");
       navigate("/admin/categorias");

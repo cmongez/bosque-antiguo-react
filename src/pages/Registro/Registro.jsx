@@ -85,9 +85,7 @@ export const Registro = () => {
         // --- 3. Llamada a la API ---
         try {
             // Usa la ruta relativa /auth/register
-            const resp = await authApi.post("/auth/register", requestBody);
-
-            console.log("Registro Exitoso:", resp.data);
+            await authApi.post("/auth/register", requestBody);
 
             setSuccess(true);
 

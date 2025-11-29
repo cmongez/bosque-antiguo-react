@@ -22,6 +22,7 @@ const adaptProduct = (p) => ({
   precio: Number(p.precio),           // BigDecimal → number
   img: p.imagenUrl,                   // imagenUrl → img (lo que usa ProductCard)
   categoria: p.categoria?.nombre ?? "",
+  disponible: p.disponible,           // disponible → disponible
 
   // Como el backend aún no tiene estos campos, ponemos valores por defecto
   stock: p.stock ?? 15,
@@ -70,4 +71,10 @@ export const deleteProduct = async (id) => {
   const res = await api.delete(`/products/${id}`); // /api/v1/products/id
   const data = Array.isArray(res.data) ? res.data : (res.data?.content ?? []);
   return data.map(adaptProduct);
+};
+
+// Actualizar solo la disponibilidad del producto usando PATCH
+export const updateProductDisponibilidad = async (id, disponible) => {
+  const res = await api.patch(`/products/${id}/disponibilidad`, { disponible });
+  return res.data;
 };

@@ -49,9 +49,6 @@ export const AdminCategorias = () => {
 
     const toggleActiva = async (id) => {
         try {
-            // TODO: Implementar endpoint PUT /api/v1/categories/{id} cuando esté disponible
-            // await updateCategory(id, { activo: !categoria.activo });
-            
             // Por ahora actualizar solo el estado local
             const next = cats.map(c => c.id === id ? { ...c, activo: !c.activo } : c);
             setCats(next);
@@ -66,9 +63,6 @@ export const AdminCategorias = () => {
         if (!confirm("¿Eliminar esta categoría?")) return;
         
         try {
-            // TODO: Implementar endpoint DELETE /api/v1/categories/{id} cuando esté disponible
-            // await deleteCategory(id);
-            
             // Por ahora actualizar solo el estado local
             const next = cats.filter(c => c.id !== id);
             setCats(next);
