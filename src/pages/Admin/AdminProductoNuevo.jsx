@@ -12,6 +12,9 @@ export const AdminProductoNuevo = () => {
     precio: "",
     imagenUrl: "",
     categoriaId: "",
+    stock: "",
+    stockCritico: "",
+    disponible: true,
   });
 
   const handleChange = (e) => {
@@ -25,8 +28,8 @@ export const AdminProductoNuevo = () => {
     e.preventDefault();
 
     // Validaciones simples
-    if (!form.nombre || !form.precio || !form.categoriaId) {
-      alert("Completa los campos obligatorios.");
+    if (!form.nombre || !form.precio || !form.categoriaId || !form.stock || !form.stockCritico) {
+      alert("Completa los campos obligatorios (nombre, precio, categoría, stock y stock crítico).");
       return;
     }
 
@@ -35,6 +38,9 @@ export const AdminProductoNuevo = () => {
       descripcion: form.descripcion,
       precio: parseFloat(form.precio),
       imagenUrl: form.imagenUrl,
+      disponible: form.disponible,
+      stock: parseInt(form.stock),
+      stockCritico: parseInt(form.stockCritico),
       categoria: {
         id: parseInt(form.categoriaId),
       },
@@ -125,14 +131,60 @@ export const AdminProductoNuevo = () => {
           />
         </div>
 
+        {/* Stock */}
+        <div className="mb-3">
+          <label className="form-label fw-bold">Stock</label>
+          <input
+            type="number"
+            name="stock"
+            className="form-control"
+            placeholder="Ej: 10"
+            value={form.stock}
+            onChange={handleChange}
+            min="0"
+            required
+          />
+        </div>
+
+        {/* Stock Crítico */}
+        <div className="mb-3">
+          <label className="form-label fw-bold">Stock Crítico</label>
+          <input
+            type="number"
+            name="stockCritico"
+            className="form-control"
+            placeholder="Ej: 5"
+            value={form.stockCritico}
+            onChange={handleChange}
+            min="1"
+            required
+          />
+          <div className="form-text">Cantidad mínima antes de mostrar alerta de stock bajo</div>
+        </div>
+
+        {/* Disponible */}
+        <div className="mb-3">
+          <div className="form-check">
+            <input
+              type="checkbox"
+              name="disponible"
+              className="form-check-input"
+              id="disponible"
+              checked={form.disponible}
+              onChange={(e) => setForm({...form, disponible: e.target.checked})}
+            />
+            <label className="form-check-label fw-bold" htmlFor="disponible">
+              Producto disponible para la venta
+            </label>
+          </div>
+        </div>
+
         {/* Categoría */}
         <div className="mb-3">
-          <label className="form-label fw-bold">Categoría (ID)</label>
+          <label className="form-label fw-bold">Categoría</label>
           <select
-            type="number"
             name="categoriaId"
             className="form-control"
-            placeholder="Ej: 1"
             value={form.categoriaId}
             onChange={handleChange}
             required
@@ -142,9 +194,7 @@ export const AdminProductoNuevo = () => {
                 <option key={c.id} value={c.id}>
                     {c.nombre}
                 </option>
-            )
-
-            )}
+            ))}
           </select>
         </div>
 

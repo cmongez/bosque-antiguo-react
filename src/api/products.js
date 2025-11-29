@@ -5,6 +5,15 @@ const api = axios.create({
   baseURL: "/api/v1", // Vite hace proxy a http://localhost:8080
 });
 
+// Interceptor para agregar JWT automáticamente
+api.interceptors.request.use((config) => {
+  const token = localStorage.getItem('token');
+  if (token) {
+    config.headers.Authorization = `Bearer ${token}`;
+  }
+  return config;
+});
+
 // Adaptamos el modelo del BACK al formato que espera el FRONT
 const adaptProduct = (p) => ({
   codigo: p.id,                       // id → codigo
@@ -44,9 +53,14 @@ export const getCategories = async () => {
 
 export const createProduct = async (product) =>{
   const res = await api.post("/products",product); // /api/v1/products
-  const data = Array.isArray(res.data) ? res.data : (res.data?.content ?? []);
-  return data
+  return res.data;
 };
+
+export const createCategory = async (category) => {
+  const res = await api.post("/categories", category); // /api/v1/categories
+  return res.data;
+};
+
 export const updateProduct = async (id, product) => {
   const res = await api.put(`/products/${id}`, product);
 };

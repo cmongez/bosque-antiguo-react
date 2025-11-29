@@ -35,8 +35,15 @@ export const Login = () => {
             localStorage.setItem("refreshToken", refreshToken);
             localStorage.setItem("role", role);
 
-            // Redirige a home
-            navigate("/home");
+            // Disparar evento personalizado para actualizar la UI
+            window.dispatchEvent(new CustomEvent('authChange'));
+
+            // Redirige a home o admin según el rol
+            if (role === 'ADMIN' || role === 'VENDEDOR') {
+                navigate("/admin");
+            } else {
+                navigate("/home");
+            }
 
         } catch (error) {
             setErrorMsg("Correo o contraseña incorrectos.");

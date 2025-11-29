@@ -1,6 +1,7 @@
 import React from 'react'
 import { BrowserRouter, Route, Routes, Navigate } from 'react-router-dom'
 import { Layout } from '../components/Layout'
+import { ProtectedRoute } from '../components/ProtectedRoute'
 import { Contacto } from '../pages/Contacto/Contacto'
 import { Home } from '../pages/Home/Home'
 import { Registro } from '../pages/Registro/Registro'
@@ -32,6 +33,7 @@ import { Error404 } from '../pages/Error404'
 import { AdminProductoNuevo } from '../pages/Admin/AdminProductoNuevo'
 import { AdminProductoEditar } from '../pages/Admin/AdminProductoEditar'
 import { MisCompras } from '../pages/MisCompras'
+import AccesoDenegado from '../pages/AccesoDenegado'
 
 
 export const RoutesComp = () => {
@@ -51,14 +53,41 @@ export const RoutesComp = () => {
                         <Route path='/nosotros' element={<Nosotros />} />
                         <Route path='/productos' element={<Productos />} />
                         <Route path='/registro' element={<Registro />} />
-                        <Route path='/checkout' element={<CheckOut />} />
+                        
+                        {/* Rutas protegidas que requieren autenticación */}
+                        <Route path='/checkout' element={
+                            <ProtectedRoute>
+                                <CheckOut />
+                            </ProtectedRoute>
+                        } />
+                        <Route path="/compra-exitosa/:orderId" element={
+                            <ProtectedRoute>
+                                <CompraExitosa />
+                            </ProtectedRoute>
+                        } />
+                        <Route path="/compra-fallida/:orderId" element={
+                            <ProtectedRoute>
+                                <CompraFallida />
+                            </ProtectedRoute>
+                        } />
+                        <Route path="/mis-compras" element={
+                            <ProtectedRoute>
+                                <MisCompras />
+                            </ProtectedRoute>
+                        } />
+                        
+                        {/* Página de acceso denegado */}
+                        <Route path='/acceso-denegado' element={<AccesoDenegado />} />
                         <Route path='/categoria' element={<Categorias />} />
-                        <Route path="/compra-exitosa/:orderId" element={<CompraExitosa />} />
-                        <Route path="/compra-fallida/:orderId" element={<CompraFallida />} />
-                        <Route path="/mis-compras" element={<MisCompras />} />
 
                     </Route>
-                    <Route path="/admin" element={<AdminLayout />}>
+                    
+                    {/* Rutas de administración - requieren rol ADMIN */}
+                    <Route path="/admin" element={
+                        <ProtectedRoute roles={['ADMIN']}>
+                            <AdminLayout />
+                        </ProtectedRoute>
+                    }>
                         <Route index element={<AdminHome />} />
                         <Route path="usuarios" element={<AdminUsuarios />} />
                         <Route path="usuarios/nuevo" element={<AdminNuevoUsuario />} />
