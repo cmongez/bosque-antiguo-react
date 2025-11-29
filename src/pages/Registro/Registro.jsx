@@ -103,7 +103,7 @@ export const Registro = () => {
             const msg = error.response?.data?.message || "Error desconocido al registrar.";
             setApiError(msg);
         }
-    }; // ⬅️ Cierre correcto de handleSubmit
+    }; // Cierre correcto de handleSubmit
 
     // --- Renderizado JSX ---
     return (
