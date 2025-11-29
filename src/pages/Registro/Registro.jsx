@@ -46,9 +46,9 @@ export const Registro = () => {
             return;
         }
 
-        const passwordRegex = /^(?=.*[A-Z])(?=.*\d).{6,}$/;
+        const passwordRegex = /^.{4,10}$/;
         if (!passwordRegex.test(form.password)) {
-            alert('La contraseña debe tener mínimo 6 caracteres, al menos una mayúscula y un número');
+            alert('La contraseña debe tener entre 4 y 10 caracteres');
             return;
         }
 

@@ -36,16 +36,16 @@ export const Home = () => {
   }
   return (
     <>
-      {/* <!-- HERO --> */}
-      <section className="text-center py-5">
+      {/* HERO SECTION */}
+      <header className="text-center py-5">
         <div className="container">
           <h1>Vivero Bosque Antiguo</h1>
           <p className="lead">Encuentra los mejores productos aquí</p>
         </div>
-      </section>
+      </header>
 
-      {/* <!-- CARRUSEL --> */}
-      <div id="carouselExampleIndicators" className="carousel slide">
+      {/* CARRUSEL PRINCIPAL */}
+      <section id="carouselExampleIndicators" className="carousel slide">
         <div className="carousel-indicators">
           <button type="button" data-bs-target="#carouselExampleIndicators" data-bs-slide-to="0" className="active"
             aria-current="true" aria-label="Slide 1"></button>
@@ -76,9 +76,9 @@ export const Home = () => {
           <span className="carousel-control-next-icon" aria-hidden="true"></span>
           <span className="visually-hidden">Next</span>
         </button>
-      </div>
+      </section>
 
-      {/* <!-- PRODUCTOS --> */}
+      {/* PRODUCTOS DESTACADOS */}
       <section className="container py-5">
         <h2 className="text-center mb-4">Nuestros productos destacados</h2>
         <div className="row g-4">
