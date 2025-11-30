@@ -1,18 +1,15 @@
 import authApi from '../../apis/authApi';
 import { useNavigate } from 'react-router-dom';
 import { useState } from 'react';
-import React from 'react'
 import './Login.css' // crea este archivo para estilos
 
 export const Login = () => {
     const navigate = useNavigate();
     const [email, setEmail] = useState('');
     const [password, setPassword] = useState('');
-    const [errorMsg, setErrorMsg] = useState(null);
 
     const handleSubmit = async (e) => {
         e.preventDefault();
-        setErrorMsg(null);
 
         try {
             const body = {
@@ -46,7 +43,7 @@ export const Login = () => {
             }
 
         } catch (error) {
-            setErrorMsg("Correo o contraseña incorrectos.");
+            console.log('error', error)
         }
     };
     return (
