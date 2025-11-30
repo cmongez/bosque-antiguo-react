@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from "react";
 import { Link } from "react-router-dom";
-import { getProducts,deleteProduct } from "../../api/products";
+import { getProducts, updateProductDisponibilidad } from "../../api/products";
 
 export const AdminProductos = () => {
   const [productos, setProductos] = useState([]);
@@ -28,18 +28,47 @@ export const AdminProductos = () => {
       currency: "CLP",
     }).format(n);
 
-  const handleDelete = async (productId) => {
-    const confirmar = window.confirm(
-      "¿Seguro que deseas eliminar este producto?"
-    );
-    if (!confirmar) return;
-
-    await deleteProduct(productId);
-    alert("Producto eliminado correctamente");
-
-    // refrescas lista si es necesario
-    cargarProductos();
+  const toggleDisponible = async (productId) => {
+    try {
+      const producto = productos.find(p => p.codigo === productId);
+      if (!producto) {
+        console.error('Producto no encontrado con ID:', productId);
+        return;
+      }
+      
+      
+      const disponibilidadActual = producto.disponible === true;
+      
+      // Actualizar solo la disponibilidad en el backend usando PATCH
+      await updateProductDisponibilidad(productId, !disponibilidadActual);
+      // Recargar la lista de productos desde el backend
+      const data = await getProducts();
+      setProductos(data);
+      localStorage.setItem("productos", JSON.stringify(data));
+      
+      alert(`Producto ${!disponibilidadActual ? 'activado' : 'desactivado'} correctamente`);
+    } catch (error) {
+      console.error('Error completo:', error);
+      console.error('Error message:', error.message);
+      console.error('Error response:', error.response);
+      alert('Error al actualizar el producto: ' + error.message);
+    }
   };
+  if (loading) {
+    return (
+      <div className="container-fluid py-3">
+        <div className="d-flex justify-content-center align-items-center" style={{minHeight: '400px'}}>
+          <div className="text-center">
+            <div className="spinner-border text-primary" role="status">
+              <span className="visually-hidden">Cargando...</span>
+            </div>
+            <p className="mt-2">Cargando productos...</p>
+          </div>
+        </div>
+      </div>
+    );
+  }
+
   return (
     <div className="container-fluid py-3">
       <div className="d-flex justify-content-between align-items-center mb-4">
@@ -64,19 +93,19 @@ export const AdminProductos = () => {
                   <th>Nombre</th>
                   <th>Categoría</th>
                   <th>Precio</th>
+                  <th>Stock</th>
                   <th>Disponible</th>
-                  <th>Acción</th>
+                  <th>Acciones</th>
                 </tr>
               </thead>
               <tbody>
                 {productos.map((p) => {
-                  // Cambiamos './../' → './../../' para que coincida con la profundidad real
-                  const fixedImgPath = p.img.replace("./../", "./../../");
-                  const imageUrl = new URL(fixedImgPath, import.meta.url).href;
+                  // Usar la imagen directamente desde el backend o placeholder
+                  const imageUrl = p.img || 'https://via.placeholder.com/60x60?text=Sin+Imagen';
 
                   return (
                     <tr key={p.codigo}>
-                      <td>{p.codigo}</td>
+                      <td>#{p.codigo}</td>
                       <td>
                         <img
                           src={imageUrl}
@@ -87,23 +116,50 @@ export const AdminProductos = () => {
                             objectFit: "cover",
                             borderRadius: "5px",
                           }}
+                          onError={(e) => {
+                            e.target.src = 'https://via.placeholder.com/60x60?text=Sin+Imagen';
+                          }}
                         />
                       </td>
-                      <td>{p.nombre}</td>
-                      <td>{p.categoria}</td>
-                      <td>{clp(p.precio)}</td>
-                      <td>{p.disponible? "Si": "No"}</td>
                       <td>
-                        <div className="btn-group">
+                        <div>
+                          <strong>{p.nombre}</strong>
+                          {p.descripcion && <div className="text-muted small">{p.descripcion.substring(0, 50)}...</div>}
+                        </div>
+                      </td>
+                      <td>
+                        <span className="badge bg-secondary">{p.categoria}</span>
+                      </td>
+                      <td>{clp(p.precio)}</td>
+                      <td>
+                        <div className="d-flex flex-column">
+                          <span className={`badge ${p.stock <= (p.stockCritico || 5) ? 'bg-warning text-dark' : 'bg-info'}`}>
+                            {p.stock || 0} unidades
+                          </span>
+                          {p.stock <= (p.stockCritico || 5) && (
+                            <small className="text-warning">Stock bajo</small>
+                          )}
+                        </div>
+                      </td>
+                      <td>
+                        <span className={`badge ${p.disponible === true ? 'bg-success' : 'bg-danger'}`}>
+                          {p.disponible === true ? "Sí" : "No"}
+                        </span>
+                      </td>
+                      <td>
+                        <div className="btn-group" role="group">
+                          <button 
+                            onClick={() => toggleDisponible(p.codigo)} 
+                            className={`btn btn-sm ${p.disponible === true ? 'btn-outline-warning' : 'btn-outline-success'}`}
+                            title={p.disponible === true ? 'Desactivar producto' : 'Activar producto'}>
+                            {p.disponible === true ? 'Desactivar' : 'Activar'}
+                          </button>
                           <Link 
-                          to={`/admin/productos/editar/${p.codigo}`}
-                          className="btn btn-sm btn-primary">
+                            to={`/admin/productos/editar/${p.codigo}`}
+                            className="btn btn-sm btn-outline-primary"
+                            title="Editar producto">
                             <i className="fa fa-edit"></i>
                           </Link>
-                          <button className="btn btn-sm btn-danger" onClick={()=> handleDelete(p.codigo)}>
-                            <i className="fa fa-trash"></i>
-                          </button>
-                        
                         </div>
                       </td>
                     </tr>

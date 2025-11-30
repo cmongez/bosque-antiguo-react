@@ -16,7 +16,8 @@ api.interceptors.request.use((config) => {
 
 // Crear nueva orden
 export const createOrder = async (orderData) => {
-  // orderData debe tener: clienteId, productos: [{productoId, cantidad, precio}], total
+  // orderData debe tener: detalles: [{productoId, cantidad}]
+  // El usuarioId se extrae del JWT en el backend
   const res = await api.post("/sales", orderData);
   return res.data;
 };

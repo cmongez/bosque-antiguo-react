@@ -1,5 +1,6 @@
 import React, { useEffect, useMemo, useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
+import { getCategories, getProducts } from "../../api/products";
 
 // helpers LS
 const readLS = (k, fb) => {
@@ -7,43 +8,34 @@ const readLS = (k, fb) => {
 };
 const writeLS = (k, v) => localStorage.setItem(k, JSON.stringify(v));
 
-// slug
-const slugify = (s) =>
-    (s || "")
-        .toString()
-        .normalize("NFD").replace(/[\u0300-\u036f]/g, "")
-        .toLowerCase()
-        .replace(/[^a-z0-9]+/g, "-")
-        .replace(/(^-|-$)+/g, "");
 
 export const AdminCategorias = () => {
     const nav = useNavigate();
-    const [cats, setCats] = useState(() => readLS("categorias", []));
-    const productos = readLS("productos", []); // por si existe
+    const [cats, setCats] = useState([]);
+    const [productos, setProductos] = useState([]);
+    const [loading, setLoading] = useState(true);
 
-    // si no hay categorías, las inferimos de productos.json (en /public/data) una sola vez
+    // Cargar categorías y productos desde la API
     useEffect(() => {
-        if (!cats.length) {
-            fetch("/data/productos.json")
-                .then(r => r.json())
-                .then(data => {
-                    const set = new Set();
-                    data.forEach(p => p?.categoria && set.add(p.categoria));
-                    const inferidas = Array.from(set).map((nombre) => ({
-                        id: crypto.randomUUID(),
-                        nombre,
-                        slug: slugify(nombre),
-                        descripcion: "",
-                        activo: true,
-                    }));
-                    if (inferidas.length) {
-                        setCats(inferidas);
-                        writeLS("categorias", inferidas);
-                    }
-                })
-                .catch(() => { });
-        }
-        // eslint-disable-next-line react-hooks/exhaustive-deps
+        const cargarDatos = async () => {
+            try {
+                const [categoriasData, productosData] = await Promise.all([
+                    getCategories(),
+                    getProducts()
+                ]);
+                setCats(categoriasData);
+                setProductos(productosData);
+            } catch (error) {
+                console.error('Error al cargar datos:', error);
+                // Fallback a datos del localStorage si la API falla
+                setCats(readLS("categorias", []));
+                setProductos(readLS("productos", []));
+            } finally {
+                setLoading(false);
+            }
+        };
+
+        cargarDatos();
     }, []);
 
     const totalPorCategoria = useMemo(() => {
@@ -55,17 +47,30 @@ export const AdminCategorias = () => {
         return map;
     }, [productos]);
 
-    const toggleActiva = (id) => {
-        const next = cats.map(c => c.id === id ? { ...c, activo: !c.activo } : c);
-        setCats(next);
-        writeLS("categorias", next);
+    const toggleActiva = async (id) => {
+        try {
+            // Por ahora actualizar solo el estado local
+            const next = cats.map(c => c.id === id ? { ...c, activo: !c.activo } : c);
+            setCats(next);
+            writeLS("categorias", next);
+        } catch (error) {
+            console.error('Error al actualizar categoría:', error);
+            alert('Error al actualizar la categoría');
+        }
     };
 
-    const eliminar = (id) => {
+    const eliminar = async (id) => {
         if (!confirm("¿Eliminar esta categoría?")) return;
-        const next = cats.filter(c => c.id !== id);
-        setCats(next);
-        writeLS("categorias", next);
+        
+        try {
+            // Por ahora actualizar solo el estado local
+            const next = cats.filter(c => c.id !== id);
+            setCats(next);
+            writeLS("categorias", next);
+        } catch (error) {
+            console.error('Error al eliminar categoría:', error);
+            alert('Error al eliminar la categoría');
+        }
     };
 
     return (
@@ -81,7 +86,14 @@ export const AdminCategorias = () => {
 
             <div className="card shadow-sm">
                 <div className="card-body">
-                    {!cats.length ? (
+                    {loading ? (
+                        <div className="text-center py-4">
+                            <div className="spinner-border text-success" role="status">
+                                <span className="visually-hidden">Cargando...</span>
+                            </div>
+                            <p className="mt-2 text-muted">Cargando categorías...</p>
+                        </div>
+                    ) : !cats.length ? (
                         <p className="text-muted mb-0">Sin categorías aún.</p>
                     ) : (
                         <div className="table-responsive">

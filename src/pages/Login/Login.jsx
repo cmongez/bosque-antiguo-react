@@ -1,18 +1,15 @@
 import authApi from '../../apis/authApi';
 import { useNavigate } from 'react-router-dom';
 import { useState } from 'react';
-import React from 'react'
 import './Login.css' // crea este archivo para estilos
 
 export const Login = () => {
     const navigate = useNavigate();
     const [email, setEmail] = useState('');
     const [password, setPassword] = useState('');
-    const [errorMsg, setErrorMsg] = useState(null);
 
     const handleSubmit = async (e) => {
         e.preventDefault();
-        setErrorMsg(null);
 
         try {
             const body = {
@@ -35,11 +32,18 @@ export const Login = () => {
             localStorage.setItem("refreshToken", refreshToken);
             localStorage.setItem("role", role);
 
-            // Redirige a home
-            navigate("/home");
+            // Disparar evento personalizado para actualizar la UI
+            window.dispatchEvent(new CustomEvent('authChange'));
+
+            // Redirige a home o admin según el rol
+            if (role === 'ADMIN' || role === 'VENDEDOR') {
+                navigate("/admin");
+            } else {
+                navigate("/home");
+            }
 
         } catch (error) {
-            setErrorMsg("Correo o contraseña incorrectos.");
+            console.log('error', error)
         }
     };
     return (

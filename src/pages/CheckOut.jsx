@@ -73,14 +73,13 @@ export const CheckOut = () => {
             // Crear orden en el microservicio de ventas
             const orderData = {
                 detalles: rows.map(row => ({
-                    productoId: row.codigo, // Extraer ID numérico
+                    productoId: parseInt(row.codigo) || 1, // Usar directamente el código como ID
                     cantidad: row.cantidad
                 }))
             };
 
             const { createOrder } = await import('../api/orders');
             const orderResponse = await createOrder(orderData);
-            console.log('orderResponse', orderResponse)
             // Limpiar carrito solo si la orden se creó exitosamente
             localStorage.setItem('carrito', JSON.stringify([]))
             window.dispatchEvent(new Event('updateCart'))

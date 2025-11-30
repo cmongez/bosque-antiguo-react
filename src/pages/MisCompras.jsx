@@ -16,7 +16,17 @@ export const MisCompras = () => {
                 setCompras(data || []);
             } catch (err) {
                 console.error('Error al cargar compras:', err);
-                setError('No se pudieron cargar las compras. ¿Estás autenticado?');
+                
+                // Manejar diferentes tipos de errores
+                if (err.response?.status === 401) {
+                    setError('Tu sesión ha expirado. Por favor, inicia sesión nuevamente.');
+                } else if (err.response?.status === 403) {
+                    setError('No tienes permisos para ver esta información.');
+                } else if (err.response?.status >= 500) {
+                    setError('Error del servidor. Por favor, intenta más tarde.');
+                } else {
+                    setError('Error al cargar tus compras. Por favor, intenta nuevamente.');
+                }
             } finally {
                 setLoading(false);
             }
@@ -40,9 +50,27 @@ export const MisCompras = () => {
         return (
             <div className="container py-5">
                 <div className="alert alert-danger" role="alert">
+                    <i className="fa fa-exclamation-triangle me-2"></i>
                     {error}
                 </div>
-                <Link to="/login" className="btn btn-primary">Iniciar Sesión</Link>
+                <div className="d-flex gap-2">
+                    <button 
+                        className="btn btn-outline-primary" 
+                        onClick={() => {
+                            setError(null);
+                            setLoading(true);
+                            // Recargar la página para reintentar
+                            window.location.reload();
+                        }}
+                    >
+                        Reintentar
+                    </button>
+                    {error.includes('sesión') && (
+                        <Link to="/login" className="btn btn-primary">
+                            Iniciar Sesión
+                        </Link>
+                    )}
+                </div>
             </div>
         );
     }
@@ -59,9 +87,16 @@ export const MisCompras = () => {
             {compras.length === 0 ? (
                 <div className="text-center py-5">
                     <i className="fa fa-shopping-bag fa-3x text-muted mb-3"></i>
-                    <h4>No tienes compras aún</h4>
-                    <p className="text-muted">Explora nuestros productos y haz tu primera compra.</p>
-                    <Link to="/productos" className="btn btn-primary">Ver Productos</Link>
+                    <h4>Aún no has realizado compras</h4>
+                    <p className="text-muted">
+                        Tu historial de compras aparecerá aquí una vez que hagas tu primera compra.
+                        <br />
+                        Explora nuestros productos y encuentra lo que necesitas.
+                    </p>
+                    <Link to="/productos" className="btn btn-primary">
+                        <i className="fa fa-shopping-cart me-2"></i>
+                        Explorar Productos
+                    </Link>
                 </div>
             ) : (
                 <div className="row g-3">

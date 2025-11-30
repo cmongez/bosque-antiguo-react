@@ -1,7 +1,6 @@
 import { Link } from "react-router-dom"
 
 export const ProductCard = ({ producto, addToCart }) => {
-  console.log('producto', producto)
   const {
     nombre,
     descripcion,

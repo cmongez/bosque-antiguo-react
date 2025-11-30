@@ -13,7 +13,6 @@ function readProducts() {
             if (raw) {
                 const arr = JSON.parse(raw);
                 if (Array.isArray(arr) && arr.length) {
-                    console.log(`[Categorias] leído desde localStorage clave: ${k}`, arr);
                     return arr;
                 }
             }

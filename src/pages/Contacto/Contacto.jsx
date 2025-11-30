@@ -1,7 +1,56 @@
-import React from 'react'
+import React, { useState } from 'react'
 import './Contacto.css'
 
 export const Contacto = () => {
+    const [form, setForm] = useState({
+        nombre: '',
+        email: '',
+        mensaje: ''
+    });
+    const [errors, setErrors] = useState({});
+
+    const handleChange = (e) => {
+        const { id, value } = e.target;
+        setForm(prev => ({ ...prev, [id]: value }));
+        // Limpiar error cuando el usuario empiece a escribir
+        if (errors[id]) {
+            setErrors(prev => ({ ...prev, [id]: '' }));
+        }
+    };
+
+    const handleSubmit = (e) => {
+        e.preventDefault();
+        const newErrors = {};
+
+        // Validar nombre requerido
+        if (!form.nombre.trim()) {
+            newErrors.nombre = 'El nombre es requerido';
+        }
+
+        // Validar correo con dominios permitidos
+        const correoRegex = /^[^\s@]+@(duoc\.cl|profesor\.duoc\.cl|gmail\.com)$/;
+        if (!form.email) {
+            newErrors.email = 'El correo es requerido';
+        } else if (!correoRegex.test(form.email)) {
+            newErrors.email = 'Solo se permiten correos @duoc.cl, @profesor.duoc.cl o @gmail.com';
+        }
+
+        // Validar mensaje máximo 500 caracteres
+        if (!form.mensaje.trim()) {
+            newErrors.mensaje = 'El mensaje es requerido';
+        } else if (form.mensaje.length > 500) {
+            newErrors.mensaje = 'El mensaje no puede exceder 500 caracteres';
+        }
+
+        setErrors(newErrors);
+
+        // Si no hay errores, enviar formulario
+        if (Object.keys(newErrors).length === 0) {
+            alert('Mensaje enviado correctamente');
+            setForm({ nombre: '', email: '', mensaje: '' });
+        }
+    };
+
     return (<>
         <section className="hero-contact text-center text-white">
             <div className="container">
@@ -15,11 +64,10 @@ export const Contacto = () => {
 
         {/* //   <!-- SECCIÓN CONTACTO-- > */}
 
-        <section className="container py-5" id="contactSection">
+        <main className="container py-5" id="contactSection">
             <div className="row g-4">
-                {/* <!-- INFORMACIÓN --> */}
-
-                <div className="col-md-6 fade-left">
+                {/* INFORMACIÓN DE CONTACTO */}
+                <article className="col-md-6 fade-left">
                     <h3>INFORMACIÓN:</h3>
                     <p>
                         <strong>ATENCIÓN A PÚBLICO:</strong><br />
@@ -44,30 +92,55 @@ export const Contacto = () => {
                         Callejón alto patagua s/n el tambo, 3070000 San Vicente de Tagua
                         Tagua, O'Higgins
                     </p>
-                </div>
+                </article>
 
-                {/* <!-- FORMULARIO --> */}
-
-                <div className="col-md-6 fade-right">
+                {/* FORMULARIO DE CONTACTO */}
+                <article className="col-md-6 fade-right">
                     <h4>Envíanos un mensaje</h4>
-                    <form id="formContacto">
+                    <form onSubmit={handleSubmit}>
                         <div className="mb-3">
                             <label htmlFor="nombre" className="form-label">Nombre</label>
-                            <input type="text" className="form-control" id="nombre" placeholder="Tu nombre" />
+                            <input 
+                                type="text" 
+                                className={`form-control ${errors.nombre ? 'is-invalid' : ''}`}
+                                id="nombre" 
+                                placeholder="Tu nombre"
+                                value={form.nombre}
+                                onChange={handleChange}
+                            />
+                            {errors.nombre && <div className="invalid-feedback">{errors.nombre}</div>}
                         </div>
                         <div className="mb-3">
                             <label htmlFor="email" className="form-label">Correo electrónico</label>
-                            <input type="email" className="form-control" id="email" placeholder="Tu email" />
+                            <input 
+                                type="email" 
+                                className={`form-control ${errors.email ? 'is-invalid' : ''}`}
+                                id="email" 
+                                placeholder="Tu email"
+                                value={form.email}
+                                onChange={handleChange}
+                            />
+                            {errors.email && <div className="invalid-feedback">{errors.email}</div>}
                         </div>
                         <div className="mb-3">
-                            <label htmlFor="mensaje" className="form-label">Mensaje</label>
-                            <textarea className="form-control" id="mensaje" rows="5" placeholder="Escribe tu mensaje"></textarea>
+                            <label htmlFor="mensaje" className="form-label">Mensaje (máx. 500 caracteres)</label>
+                            <textarea 
+                                className={`form-control ${errors.mensaje ? 'is-invalid' : ''}`}
+                                id="mensaje" 
+                                rows="5" 
+                                placeholder="Escribe tu mensaje"
+                                value={form.mensaje}
+                                onChange={handleChange}
+                                maxLength="500"
+                            ></textarea>
+                            <small className="text-muted">{form.mensaje.length}/500 caracteres</small>
+                            {errors.mensaje && <div className="invalid-feedback">{errors.mensaje}</div>}
                         </div>
                         <button type="submit" className="btn btn-success">Enviar</button>
                     </form>
-                </div>
+                </article>
             </div>
-        </section>
+        </main>
 
         {/* <!--MAPA --> */}
 

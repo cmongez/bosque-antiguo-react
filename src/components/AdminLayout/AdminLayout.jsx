@@ -1,17 +1,26 @@
 import React from "react";
-import { Outlet, Link, useLocation } from "react-router-dom";
+import { Outlet, Link, useLocation, useNavigate } from "react-router-dom";
 import "./AdminLayout.css";
 
 export const AdminLayout = () => {
     const { pathname } = useLocation();
+    const navigate = useNavigate();
     const isActive = (path) => pathname === path ? "active" : "";
+
+    const handleLogout = () => {
+        localStorage.removeItem('token')
+        localStorage.removeItem('refreshToken')
+        localStorage.removeItem('role')
+        window.dispatchEvent(new CustomEvent('authChange'))
+        navigate('/home')
+    }
 
     return (
         <div className="admin-container">
             {/* ==== Sidebar escritorio ==== */}
             <nav className="sidebar-admin bg-dark text-white d-none d-lg-flex flex-column p-3">
                 <h5 className="mb-4 text-center">
-                    <i className="fa-solid fa-building me-2"></i>Company name
+                    <i className="fa-solid fa-building me-2"></i>Bosque Antiguo
                 </h5>
 
                 <ul className="nav-admin flex-column mb-auto">
@@ -63,7 +72,7 @@ export const AdminLayout = () => {
                         <i className="fa fa-store me-2"></i>Tienda
                     </Link>
 
-                    <button className="btn btn-sm btn-danger w-100 text-start">
+                    <button className="btn btn-sm btn-danger w-100 text-start" onClick={handleLogout}>
                         <i className="fa fa-sign-out-alt me-2"></i>Cerrar Sesión
                     </button>
                 </div>
@@ -73,7 +82,7 @@ export const AdminLayout = () => {
             <nav className="navbar navbar-expand-lg navbar-dark bg-dark d-lg-none w-100 fixed-top">
                 <div className="container-fluid">
                     <Link className="navbar-brand" to="/admin">
-                        <i className="fa-solid fa-building me-2"></i>Company name
+                        <i className="fa-solid fa-building me-2"></i>Bosque Antiguo
                     </Link>
                     <button
                         className="navbar-toggler"
@@ -98,7 +107,7 @@ export const AdminLayout = () => {
                             <li><hr className="dropdown-divider" /></li>
                             <li><Link to="/admin/perfil" className="nav-link"><i className="fa fa-user-circle me-2"></i>Perfil</Link></li>
                             <li><Link to="/" className="nav-link"><i className="fa fa-store me-2"></i>Tienda</Link></li>
-                            <li><button className="btn btn-danger w-100 mt-2"><i className="fa fa-sign-out-alt me-2"></i>Cerrar sesión</button></li>
+                            <li><button className="btn btn-danger w-100 mt-2" onClick={handleLogout}><i className="fa fa-sign-out-alt me-2"></i>Cerrar sesión</button></li>
                         </ul>
                     </div>
                 </div>

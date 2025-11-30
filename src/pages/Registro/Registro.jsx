@@ -46,9 +46,9 @@ export const Registro = () => {
             return;
         }
 
-        const passwordRegex = /^(?=.*[A-Z])(?=.*\d).{6,}$/;
+        const passwordRegex = /^.{4,10}$/;
         if (!passwordRegex.test(form.password)) {
-            alert('La contraseña debe tener mínimo 6 caracteres, al menos una mayúscula y un número');
+            alert('La contraseña debe tener entre 4 y 10 caracteres');
             return;
         }
 
@@ -85,9 +85,7 @@ export const Registro = () => {
         // --- 3. Llamada a la API ---
         try {
             // Usa la ruta relativa /auth/register
-            const resp = await authApi.post("/auth/register", requestBody);
-
-            console.log("Registro Exitoso:", resp.data);
+            await authApi.post("/auth/register", requestBody);
 
             setSuccess(true);
 
@@ -103,7 +101,7 @@ export const Registro = () => {
             const msg = error.response?.data?.message || "Error desconocido al registrar.";
             setApiError(msg);
         }
-    }; // ⬅️ Cierre correcto de handleSubmit
+    }; // Cierre correcto de handleSubmit
 
     // --- Renderizado JSX ---
     return (
