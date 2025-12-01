@@ -7,9 +7,11 @@ import { ModalBusqueda } from './ModalBusqueda'
 
 export const Layout = () => {
     return (
-        <div>
+        <div className='d-flex flex-column min-vh-100'>
             <Navbar />
-            <Outlet />
+            <main className='flex-grow-1'>
+                <Outlet />
+            </main>
             <ModalBusqueda />
             <Footer />
         </div>

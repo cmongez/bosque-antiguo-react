@@ -1,20 +1,7 @@
 import React, { useEffect, useState } from 'react'
 import { useLocation } from 'react-router-dom'
+import { getProductById, getProducts } from '../../api/products'
 import './DetalleProducto.css'
-
-// Importa imágenes base
-import img1 from './../../assets/img/jardineria1.jpg'
-import img2 from './../../assets/img/jardineria.jpg'
-import img3 from './../../assets/img/close-up-manos-sosteniendo-plantas-de-interior.jpg'
-
-// Catálogo base
-const products = [
-    { codigo: 'PI001', nombre: 'Ficus', descripcion: 'Planta de interior de hojas brillantes, fácil de cuidar.', precio: 10000, stock: 25, stockCritico: 5, categoria: 'Plantas de interior', img: img1 },
-    { codigo: 'PI002', nombre: 'Sansevieria', descripcion: 'Conocida como lengua de suegra, muy resistente.', precio: 15000, stock: 40, stockCritico: 10, categoria: 'Plantas de interior', img: img2 },
-    { codigo: 'PI003', nombre: 'Afelandra', descripcion: 'Planta tropical con hojas llamativas y flores amarillas.', precio: 12000, stock: 15, stockCritico: 3, categoria: 'Plantas de interior', img: img3 },
-    { codigo: 'FR001', nombre: 'Mandarino', descripcion: 'Árbol frutal de mandarinas dulces y jugosas.', precio: 12000, stock: 20, stockCritico: 4, categoria: 'Frutales', img: img3 },
-    { codigo: 'FR002', nombre: 'Palto', descripcion: 'Árbol frutal que produce paltas (aguacates).', precio: 18000, stock: 10, stockCritico: 2, categoria: 'Frutales', img: img1 },
-]
 
 export const DetalleProducto = () => {
     const location = useLocation()
@@ -23,10 +10,39 @@ export const DetalleProducto = () => {
 
     const [product, setProduct] = useState(null)
     const [qty, setQty] = useState(1)
+    const [loading, setLoading] = useState(true)
+    const [error, setError] = useState(null)
+    const [relacionados, setRelacionados] = useState([])
 
     useEffect(() => {
-        const found = products.find(p => p.codigo === codigo)
-        setProduct(found)
+        const cargarProducto = async () => {
+            if (!codigo) {
+                setError('Código de producto no especificado')
+                setLoading(false)
+                return
+            }
+
+            try {
+                setLoading(true)
+                const producto = await getProductById(codigo)
+                setProduct(producto)
+                
+                // Cargar productos relacionados de la misma categoría
+                const todos = await getProducts()
+                const relacionadosFiltrados = todos
+                    .filter(p => p.categoria === producto.categoria && p.codigo !== producto.codigo)
+                    .slice(0, 4)
+                setRelacionados(relacionadosFiltrados)
+                
+            } catch (err) {
+                console.error('Error al cargar producto:', err)
+                setError('Error al cargar el producto')
+            } finally {
+                setLoading(false)
+            }
+        }
+
+        cargarProducto()
     }, [codigo])
 
     const fmt = n => n.toLocaleString('es-CL', { style: 'currency', currency: 'CLP', maximumFractionDigits: 0 })
@@ -49,17 +65,24 @@ export const DetalleProducto = () => {
     }
 
 
-    if (!product) {
+    if (loading) {
         return (
             <div className="container py-5 text-center">
-                <p className="text-danger">Producto no encontrado.</p>
+                <div className="spinner-border text-success" role="status">
+                    <span className="visually-hidden">Cargando producto...</span>
+                </div>
             </div>
         )
     }
 
-    const relacionados = products
-        .filter(p => p.categoria === product.categoria && p.codigo !== product.codigo)
-        .slice(0, 4)
+    if (error || !product) {
+        return (
+            <div className="container py-5 text-center">
+                <p className="text-danger">{error || 'Producto no encontrado.'}</p>
+                <a href="/productos" className="btn btn-primary">Volver a productos</a>
+            </div>
+        )
+    }
 
     return (
         <div className="container py-4">
@@ -76,7 +99,11 @@ export const DetalleProducto = () => {
             <div className="row g-4">
                 {/* Galería */}
                 <div className="col-lg-7">
-                    <img src={product.img} alt={product.nombre} className="gallery-main" />
+                    <img 
+                        src={product.img ? new URL(product.img, import.meta.url).href : '/placeholder-image.jpg'} 
+                        alt={product.nombre} 
+                        className="gallery-main" 
+                    />
                 </div>
 
                 {/* Info */}
@@ -122,7 +149,11 @@ export const DetalleProducto = () => {
                     <div key={r.codigo} className="col-6 col-md-3">
                         <a href={`/detalle?codigo=${r.codigo}`} className="text-decoration-none text-reset">
                             <div className="card h-100">
-                                <img src={r.img} className="card-img-top" alt={r.nombre} />
+                                <img 
+                                    src={r.img ? new URL(r.img, import.meta.url).href : '/placeholder-image.jpg'} 
+                                    className="card-img-top" 
+                                    alt={r.nombre} 
+                                />
                                 <div className="card-body">
                                     <div className="fw-semibold">{r.nombre}</div>
                                     <div className="text-success">{fmt(r.precio)}</div>

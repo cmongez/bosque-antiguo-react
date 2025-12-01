@@ -7,9 +7,13 @@ export const Login = () => {
     const navigate = useNavigate();
     const [email, setEmail] = useState('');
     const [password, setPassword] = useState('');
+    const [error, setError] = useState('');
+    const [loading, setLoading] = useState(false);
 
     const handleSubmit = async (e) => {
         e.preventDefault();
+        setError('');
+        setLoading(true);
 
         try {
             const body = {
@@ -43,7 +47,24 @@ export const Login = () => {
             }
 
         } catch (error) {
-            console.log('error', error)
+            console.log('error', error);
+            
+            // Manejo específico de errores de login
+            if (error.response?.status === 401) {
+                setError('Credenciales incorrectas. Verifica tu email y contraseña.');
+            } else if (error.response?.status === 404) {
+                setError('Usuario no encontrado. Verifica tu email o regístrate.');
+            } else if (error.response?.status === 403) {
+                setError('Acceso denegado. Credenciales incorrectas');
+            } else if (error.response?.status >= 500) {
+                setError('Error del servidor. Intenta nuevamente más tarde.');
+            } else if (error.code === 'NETWORK_ERROR' || !error.response) {
+                setError('Error de conexión. Verifica tu conexión a internet.');
+            } else {
+                setError(error.response?.data?.message || 'Error al iniciar sesión. Intenta nuevamente.');
+            }
+        } finally {
+            setLoading(false);
         }
     };
     return (
@@ -52,6 +73,14 @@ export const Login = () => {
                 <h3 className="text-center mb-4">Iniciar Sesión</h3>
 
                 <form id="loginForm" onSubmit={handleSubmit}>
+                    {/* Mostrar mensaje de error */}
+                    {error && (
+                        <div className="alert alert-danger" role="alert">
+                            <i className="fas fa-exclamation-triangle me-2"></i>
+                            {error}
+                        </div>
+                    )}
+
                     {/* Correo */}
                     <div className="mb-3">
                         <label htmlFor="correoLogin" className="form-label">
@@ -60,11 +89,15 @@ export const Login = () => {
                         <input
                             type="email"
                             value={email}
-                            onChange={(e) => setEmail(e.target.value)}
+                            onChange={(e) => {
+                                setEmail(e.target.value);
+                                if (error) setError(''); // Limpiar error al escribir
+                            }}
                             className="form-control"
                             id="correoLogin"
                             placeholder="ejemplo@duoc.cl"
                             required
+                            disabled={loading}
                         />
                     </div>
 
@@ -75,11 +108,16 @@ export const Login = () => {
                         </label>
                         <input
                             type="password"
-                            value={password}                            className="form-control"
-                            onChange={(e) => setPassword(e.target.value)}
+                            value={password}
+                            className="form-control"
+                            onChange={(e) => {
+                                setPassword(e.target.value);
+                                if (error) setError(''); // Limpiar error al escribir
+                            }}
                             id="passwordLogin"
                             placeholder="Ingresa tu contraseña"
                             required
+                            disabled={loading}
                         />
                     </div>
 
@@ -105,8 +143,15 @@ export const Login = () => {
                     </div>
 
                     {/* Botón */}
-                    <button type="submit" className="btn btn-success w-100">
-                        Ingresar
+                    <button type="submit" className="btn btn-success w-100" disabled={loading}>
+                        {loading ? (
+                            <>
+                                <span className="spinner-border spinner-border-sm me-2" role="status" aria-hidden="true"></span>
+                                Iniciando sesión...
+                            </>
+                        ) : (
+                            'Ingresar'
+                        )}
                     </button>
                 </form>
 

@@ -36,7 +36,7 @@ export const getProducts = async () => {
 };
 export const getProductById = async (id) => {
   const res = await api.get(`/products/${id}`);
-  return res.data; // ← devuelves el objeto directamente
+  return adaptProduct(res.data); // ← adaptar el producto
 };
 
 export const getProductsDisponibles = async () => {
@@ -44,21 +44,50 @@ export const getProductsDisponibles = async () => {
   const data = Array.isArray(res.data) ? res.data : (res.data?.content ?? []);
   return data.map(adaptProduct);
 };
-export const getCategories = async () => {
-  const res = await api.get("/categories"); // /api/v1/categories
-  const data = Array.isArray(res.data) ? res.data : (res.data?.content ?? []);
-  return data
 
-
-};
 
 export const createProduct = async (product) =>{
   const res = await api.post("/products",product); // /api/v1/products
   return res.data;
 };
 
+// Adaptador para categorías del backend
+const adaptCategory = (c) => ({
+  id: c.id,
+  nombre: c.nombre,
+  descripcion: c.descripcion || "",
+  activo: c.activo !== false, // Por defecto true si no se especifica
+  slug: c.slug || c.nombre?.toLowerCase().replace(/\s+/g, '-') || ""
+});
+
+// Obtener todas las categorías
+export const getCategories = async () => {
+  const res = await api.get("/categories");
+  const data = Array.isArray(res.data) ? res.data : (res.data?._embedded?.categoryList ?? []);
+  return data.map(adaptCategory);
+};
+
+// Obtener categoría por ID
+export const getCategoryById = async (id) => {
+  const res = await api.get(`/categories/${id}`);
+  return adaptCategory(res.data);
+};
+
+// Crear nueva categoría
 export const createCategory = async (category) => {
   const res = await api.post("/categories", category); // /api/v1/categories
+  return adaptCategory(res.data);
+};
+
+// Actualizar categoría
+export const updateCategory = async (id, category) => {
+  const res = await api.put(`/categories/${id}`, category);
+  return adaptCategory(res.data);
+};
+
+// Eliminar categoría
+export const deleteCategory = async (id) => {
+  const res = await api.delete(`/categories/${id}`);
   return res.data;
 };
 

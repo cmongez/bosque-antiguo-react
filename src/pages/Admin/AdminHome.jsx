@@ -1,26 +1,62 @@
 import React, { useEffect, useState } from "react";
 import { Link } from "react-router-dom";
+import { getAllOrders } from "../../api/orders";
+import { getProducts } from "../../api/products";
 
 export const AdminHome = () => {
-    const [salesSummary, setSalesSummary] = useState(null);
-    const [topProducts, setTopProducts] = useState([]);
-    const [stockStatus, setStockStatus] = useState([]);
+    const [salesSummary, setSalesSummary] = useState({
+        cantidadVentas: 0,
+        totalVentas: 0,
+        totalMes: 0,
+        promedioVenta: 0
+    });
+    const [stockStatus, setStockStatus] = useState({
+        criticos: 0,
+        agotados: 0
+    });
     const [loading, setLoading] = useState(true);
 
     useEffect(() => {
         const cargarDatos = async () => {
             try {
-                const { getSalesSummary, getTopProducts, getStockStatus } = await import('../../api/reports');
-                
-                const [summary, products, stock] = await Promise.all([
-                    getSalesSummary(),
-                    getTopProducts(),
-                    getStockStatus()
+                const [ordenes, productos] = await Promise.all([
+                    getAllOrders(),
+                    getProducts()
                 ]);
                 
-                setSalesSummary(summary);
-                setTopProducts(products);
-                setStockStatus(stock);
+                // Calcular estadísticas de ventas
+                const totalVentas = ordenes.reduce((sum, orden) => sum + orden.total, 0);
+                const cantidadVentas = ordenes.length;
+                
+                // Ventas del mes actual
+                const fechaActual = new Date();
+                const mesActual = fechaActual.getMonth();
+                const añoActual = fechaActual.getFullYear();
+                
+                const ventasMes = ordenes.filter(orden => {
+                    const fechaOrden = new Date(orden.fecha);
+                    return fechaOrden.getMonth() === mesActual && fechaOrden.getFullYear() === añoActual;
+                });
+                
+                const totalMes = ventasMes.reduce((sum, orden) => sum + orden.total, 0);
+                const promedioVenta = cantidadVentas > 0 ? totalVentas / cantidadVentas : 0;
+                
+                setSalesSummary({
+                    cantidadVentas,
+                    totalVentas,
+                    totalMes,
+                    promedioVenta
+                });
+                
+                // Calcular stock crítico y agotado
+                const criticos = productos.filter(p => p.stock > 0 && p.stock <= p.stockCritico).length;
+                const agotados = productos.filter(p => p.stock === 0).length;
+                
+                setStockStatus({
+                    criticos,
+                    agotados
+                });
+                
             } catch (error) {
                 console.error('Error cargando datos del dashboard:', error);
             } finally {
@@ -81,7 +117,7 @@ export const AdminHome = () => {
                             <h5 className="card-title">
                                 <i className="fa fa-exclamation-triangle me-2"></i>Stock Crítico
                             </h5>
-                            <h3 className="fw-bold">{stockStatus.filter(s => s.estado === 'CRITICO').length}</h3>
+                            <h3 className="fw-bold">{stockStatus.criticos}</h3>
                             <p className="mb-0">Productos con bajo stock</p>
                         </div>
                     </div>
@@ -93,7 +129,7 @@ export const AdminHome = () => {
                             <h5 className="card-title">
                                 <i className="fa fa-times-circle me-2"></i>Agotados
                             </h5>
-                            <h3 className="fw-bold">{stockStatus.filter(s => s.estado === 'AGOTADO').length}</h3>
+                            <h3 className="fw-bold">{stockStatus.agotados}</h3>
                             <p className="mb-0">Productos sin stock</p>
                         </div>
                     </div>
@@ -162,7 +198,7 @@ export const AdminHome = () => {
                     </Link>
                 </div>
 
-                <div className="col-md-3 col-sm-6">
+                {/* <div className="col-md-3 col-sm-6">
                     <Link to="/admin/reportes" className="text-decoration-none">
                         <div className="card h-100 shadow-sm text-center p-4 hover-scale">
                             <i className="fa fa-chart-bar fa-2x text-primary mb-3"></i>
@@ -172,7 +208,7 @@ export const AdminHome = () => {
                             </p>
                         </div>
                     </Link>
-                </div>
+                </div> */}
 
                 <div className="col-md-3 col-sm-6">
                     <Link to="/admin/perfil" className="text-decoration-none">

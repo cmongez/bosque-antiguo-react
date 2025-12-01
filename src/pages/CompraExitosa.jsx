@@ -48,11 +48,6 @@ export const CompraExitosa = () => {
                         Total pagado: {clp(total)}
                     </div>
 
-                    <div className="d-flex justify-content-end gap-2 mt-4">
-                        <button className="btn btn-outline-danger">Imprimir boleta en PDF</button>
-                        <button className="btn btn-success">Enviar boleta por email</button>
-                    </div>
-
                     <div className="text-center mt-4">
                         <Link to="/productos" className="btn btn-outline-secondary">Volver a la tienda</Link>
                     </div>

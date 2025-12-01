@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from "react";
 import { Link } from "react-router-dom";
-import { getAllUsers, getRoles, updateUserRole, toggleUserStatus } from "../../api/users";
+import { getAllUsers, getRoles, updateUserRole } from "../../api/users";
 
 export const AdminUsuarios = () => {
     const [usuarios, setUsuarios] = useState([]);
@@ -53,30 +53,61 @@ export const AdminUsuarios = () => {
 
     const handleRoleChange = async (userId, newRoleId) => {
         try {
+            console.log('Cambiando rol de usuario:', userId, 'a rol:', newRoleId);
+            
+            // Verificar que tenemos un token válido
+            const token = localStorage.getItem('token');
+            if (!token) {
+                alert('No se encontró token de autenticación. Por favor, inicia sesión nuevamente.');
+                return;
+            }
+            
+            // Confirmar cambio de rol
+            const usuario = usuarios.find(u => u.id === userId);
+            const rolAnterior = usuario?.roles?.[0]?.nombre || 'Sin rol';
+            const rolNuevo = roles.find(r => r.id === newRoleId)?.nombre || 'Desconocido';
+            
+            if (!confirm(`¿Cambiar el rol de ${usuario?.nombre || 'este usuario'} de "${rolAnterior}" a "${rolNuevo}"?`)) {
+                return;
+            }
+            
+            setLoading(true);
+            
+            // Llamar a la API para actualizar el rol
             await updateUserRole(userId, newRoleId);
-            // Recargar usuarios
-            const usuariosData = await getAllUsers();
-            setUsuarios(usuariosData);
+            
+            // Actualizar el estado local
+            setUsuarios(prevUsuarios => 
+                prevUsuarios.map(u => 
+                    u.id === userId 
+                        ? { ...u, roles: [{ id: newRoleId, nombre: rolNuevo }] }
+                        : u
+                )
+            );
+            
             setEditingRole(null);
-            alert('Rol actualizado correctamente');
+            alert(`Rol actualizado correctamente a ${rolNuevo}`);
+            
         } catch (error) {
-            console.error('Error al actualizar rol:', error);
-            alert('Error al actualizar el rol');
+            console.error('Error inesperado al actualizar rol:', error);
+            alert('Error inesperado al actualizar el rol');
+        } finally {
+            setLoading(false);
         }
     };
 
-    const handleToggleStatus = async (userId) => {
-        try {
-            await toggleUserStatus(userId);
-            // Recargar usuarios
-            const usuariosData = await getAllUsers();
-            setUsuarios(usuariosData);
-            alert('Estado del usuario actualizado correctamente');
-        } catch (error) {
-            console.error('Error al cambiar estado:', error);
-            alert('Error al cambiar el estado del usuario');
-        }
-    };
+    // const handleToggleStatus = async (userId) => {
+    //     try {
+    //         await toggleUserStatus(userId);
+    //         // Recargar usuarios
+    //         const usuariosData = await getAllUsers();
+    //         setUsuarios(usuariosData);
+    //         alert('Estado del usuario actualizado correctamente');
+    //     } catch (error) {
+    //         console.error('Error al cambiar estado:', error);
+    //         alert('Error al cambiar el estado del usuario');
+    //     }
+    // };
 
     return (
         <div className="container-fluid py-3">
@@ -117,13 +148,13 @@ export const AdminUsuarios = () => {
                                         <tr key={u.id}>
                                             <td>#{u.id}</td>
                                             <td>{u.rut}</td>
-                                            <td>{u.nombre}</td>
+                                            <td>{u.nombre} {u.apellido}</td>
                                             <td>{u.email}</td>
                                             <td>
                                                 {editingRole === u.id ? (
                                                     <select 
                                                         className="form-select form-select-sm"
-                                                        defaultValue={u.rol?.id}
+                                                        defaultValue={u.roles?.[0]?.id}
                                                         onBlur={() => setEditingRole(null)}
                                                         onChange={(e) => handleRoleChange(u.id, parseInt(e.target.value))}
                                                     >
@@ -135,12 +166,12 @@ export const AdminUsuarios = () => {
                                                     </select>
                                                 ) : (
                                                     <span 
-                                                        className={`badge ${u.rol?.nombre === 'ADMIN' ? 'bg-danger' : u.rol?.nombre === 'VENDEDOR' ? 'bg-warning' : 'bg-info'}`}
+                                                        className={`badge ${u.roles?.[0]?.nombre === 'ADMIN' ? 'bg-danger' : u.roles?.[0]?.nombre === 'VENDEDOR' ? 'bg-warning' : 'bg-info'}`}
                                                         style={{ cursor: 'pointer' }}
                                                         onClick={() => setEditingRole(u.id)}
                                                         title="Click para editar rol"
                                                     >
-                                                        {u.rol?.nombre || 'Sin rol'}
+                                                        {u.roles?.[0]?.nombre || 'Sin rol'}
                                                     </span>
                                                 )}
                                             </td>
@@ -151,26 +182,19 @@ export const AdminUsuarios = () => {
                                             </td>
                                             <td>
                                                 <div className="btn-group" role="group">
-                                                    <button 
-                                                        onClick={() => handleToggleStatus(u.id)}
-                                                        className={`btn btn-sm ${u.activo ? 'btn-outline-warning' : 'btn-outline-success'}`}
-                                                        title={u.activo ? 'Desactivar usuario' : 'Activar usuario'}
-                                                    >
-                                                        {u.activo ? 'Desactivar' : 'Activar'}
-                                                    </button>
                                                     <Link 
                                                         to={`/admin/usuarios/editar/${u.id}`}
                                                         className="btn btn-sm btn-outline-primary"
                                                         title="Editar usuario"
                                                     >
-                                                        <i className="fa fa-edit"></i>
+                                                        <i className="fa fa-edit me-1"></i>Editar
                                                     </Link>
                                                     <Link
                                                         to={`/admin/usuarios/${u.id}/historial`}
                                                         className="btn btn-sm btn-outline-secondary"
-                                                        title="Ver historial"
+                                                        title="Ver historial de compras"
                                                     >
-                                                        <i className="fa fa-history"></i>
+                                                        <i className="fa fa-history me-1"></i>Historial
                                                     </Link>
                                                 </div>
                                             </td>

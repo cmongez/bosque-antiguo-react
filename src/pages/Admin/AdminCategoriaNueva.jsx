@@ -1,8 +1,7 @@
-import React, { useMemo, useState } from "react";
+import React, { useMemo, useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
+import { getCategories, createCategory } from "../../api/products";
 
-const readLS = (k, fb) => { try { const r = localStorage.getItem(k); return r ? JSON.parse(r) : fb; } catch { return fb; } };
-const writeLS = (k, v) => localStorage.setItem(k, JSON.stringify(v));
 const slugify = (s) =>
     (s || "")
         .toString()
@@ -13,27 +12,74 @@ const slugify = (s) =>
 
 export const AdminCategoriaNueva = () => {
     const nav = useNavigate();
-    const [cats, setCats] = useState(() => readLS("categorias", []));
+    const [cats, setCats] = useState([]);
+    const [loading, setLoading] = useState(false);
     const [nombre, setNombre] = useState("");
     const slug = useMemo(() => slugify(nombre), [nombre]);
     const [descripcion, setDescripcion] = useState("");
     const [activo, setActivo] = useState(true);
     const [touched, setTouched] = useState(false);
 
+    // Cargar categorías existentes para validar duplicados
+    useEffect(() => {
+        const cargarCategorias = async () => {
+            try {
+                const categoriasData = await getCategories();
+                setCats(categoriasData);
+            } catch (error) {
+                console.error('Error al cargar categorías:', error);
+            }
+        };
+        
+        cargarCategorias();
+    }, []);
+
     const exists = useMemo(
         () => cats.some(c => c.slug === slug),
         [cats, slug]
     );
 
-    const submit = (e) => {
+    const submit = async (e) => {
         e.preventDefault();
         setTouched(true);
-        if (!nombre.trim() || !slug || exists) return;
-        const nueva = { id: crypto.randomUUID(), nombre: nombre.trim(), slug, descripcion: descripcion.trim(), activo };
-        const next = [...cats, nueva];
-        setCats(next);
-        writeLS("categorias", next);
-        nav("/admin/categorias", { replace: true });
+        
+        if (!nombre.trim()) {
+            alert('El nombre de la categoría es requerido');
+            return;
+        }
+        
+        if (!slug) {
+            alert('No se pudo generar el slug para la categoría');
+            return;
+        }
+        
+        if (exists) {
+            alert('Ya existe una categoría con este nombre');
+            return;
+        }
+        
+        try {
+            setLoading(true);
+            
+            // Crear nueva categoría usando la API
+            const nuevaCategoria = {
+                nombre: nombre.trim(),
+                descripcion: descripcion.trim(),
+                activo,
+                slug
+            };
+            
+            await createCategory(nuevaCategoria);
+            
+            alert('Categoría creada correctamente');
+            nav("/admin/categorias", { replace: true });
+            
+        } catch (error) {
+            console.error('Error al crear categoría:', error);
+            alert('Error al crear la categoría: ' + error.message);
+        } finally {
+            setLoading(false);
+        }
     };
 
     return (
@@ -72,8 +118,15 @@ export const AdminCategoriaNueva = () => {
                         </div>
 
                         <div className="col-12 d-flex gap-2">
-                            <button type="submit" className="btn btn-success" disabled={!nombre.trim() || !slug || exists}>
-                                Guardar
+                            <button type="submit" className="btn btn-success" disabled={loading || !nombre.trim() || !slug || exists}>
+                                {loading ? (
+                                    <>
+                                        <span className="spinner-border spinner-border-sm me-2" role="status"></span>
+                                        Guardando...
+                                    </>
+                                ) : (
+                                    'Guardar'
+                                )}
                             </button>
                             <button type="button" className="btn btn-outline-secondary" onClick={() => nav("/admin/categorias")}>
                                 Cancelar

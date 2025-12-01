@@ -1,32 +1,40 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import { Link } from "react-router-dom";
+import { getAllOrders } from "../../api/orders";
+import { getAllUsers } from "../../api/users";
 
 export const AdminOrdenes = () => {
     const [filtro, setFiltro] = useState("");
+    const [ordenes, setOrdenes] = useState([]);
+    const [usuarios, setUsuarios] = useState([]);
+    const [loading, setLoading] = useState(true);
+    const [error, setError] = useState(null);
 
-    const ordenes = [
-        {
-            id: 1,
-            fecha: "2025-10-19",
-            cliente: "Juan Pérez",
-            total: 45990,
-            estado: "Pagada",
-        },
-        {
-            id: 2,
-            fecha: "2025-10-18",
-            cliente: "Ana Torres",
-            total: 25990,
-            estado: "Pendiente",
-        },
-        {
-            id: 3,
-            fecha: "2025-10-17",
-            cliente: "Carlos López",
-            total: 33990,
-            estado: "Cancelada",
-        },
-    ];
+    useEffect(() => {
+        const cargarDatos = async () => {
+            try {
+                setLoading(true);
+                const [ordenesData, usuariosData] = await Promise.all([
+                    getAllOrders(),
+                    getAllUsers()
+                ]);
+                setOrdenes(ordenesData);
+                setUsuarios(usuariosData);
+            } catch (err) {
+                console.error('Error al cargar datos:', err);
+                setError('Error al cargar las órdenes y usuarios');
+            } finally {
+                setLoading(false);
+            }
+        };
+
+        cargarDatos();
+    }, []);
+
+    // Función para obtener usuario por ID
+    const getUsuarioById = (usuarioId) => {
+        return usuarios.find(u => u.id === usuarioId);
+    };
 
     const clp = (n) =>
         new Intl.NumberFormat("es-CL", {
@@ -34,9 +42,43 @@ export const AdminOrdenes = () => {
             currency: "CLP",
         }).format(n);
 
-    const filtradas = ordenes.filter((o) =>
-        o.cliente.toLowerCase().includes(filtro.toLowerCase())
-    );
+    const filtradas = ordenes
+        .filter((o) => {
+            const usuario = getUsuarioById(o.usuarioId);
+            return usuario?.nombre?.toLowerCase().includes(filtro.toLowerCase()) ||
+                   usuario?.email?.toLowerCase().includes(filtro.toLowerCase()) ||
+                   o.id.toString().includes(filtro);
+        })
+        .sort((a, b) => new Date(b.fecha) - new Date(a.fecha)); // Ordenar por fecha desc (más reciente primero)
+
+    if (loading) {
+        return (
+            <div className="container-fluid py-4">
+                <div className="text-center">
+                    <div className="spinner-border text-success" role="status">
+                        <span className="visually-hidden">Cargando órdenes...</span>
+                    </div>
+                </div>
+            </div>
+        );
+    }
+
+    if (error) {
+        return (
+            <div className="container-fluid py-4">
+                <div className="alert alert-danger text-center">
+                    <h4>Error</h4>
+                    <p>{error}</p>
+                    <button 
+                        className="btn btn-outline-danger" 
+                        onClick={() => window.location.reload()}
+                    >
+                        Reintentar
+                    </button>
+                </div>
+            </div>
+        );
+    }
 
     return (
         <div className="container-fluid">
@@ -68,35 +110,37 @@ export const AdminOrdenes = () => {
                                 </tr>
                             </thead>
                             <tbody>
-                                {filtradas.map((orden) => (
-                                    <tr key={orden.id}>
-                                        <td>{orden.id}</td>
-                                        <td>{orden.fecha}</td>
-                                        <td>{orden.cliente}</td>
-                                        <td>{clp(orden.total)}</td>
-                                        <td>
-                                            <span
-                                                className={`badge ${orden.estado === "Pagada"
-                                                        ? "bg-success"
-                                                        : orden.estado === "Pendiente"
-                                                            ? "bg-warning text-dark"
-                                                            : "bg-danger"
-                                                    }`}
-                                            >
-                                                {orden.estado}
-                                            </span>
-                                        </td>
-                                        <td>
-                                            <Link
-                                                to={`/admin/ordenes/${orden.id}`}
-                                                className="btn btn-sm btn-primary"
-                                            >
-                                                <i className="fa fa-eye me-1"></i> Ver boleta
-                                            </Link>
-                                        </td>
-                                    </tr>
-                                ))}
-                                {filtradas.length === 0 && (
+                                {filtradas.map((orden) => {
+                                    const usuario = getUsuarioById(orden.usuarioId);
+                                    return (
+                                        <tr key={orden.id}>
+                                            <td>#{orden.id}</td>
+                                            <td>{new Date(orden.fecha).toLocaleDateString('es-CL')}</td>
+                                            <td>
+                                                <div>
+                                                    <strong>{usuario ? `${usuario.nombre} ${usuario.apellido}` : 'Usuario no encontrado'}</strong>
+                                                    <br />
+                                                    <small className="text-muted">{usuario?.email || 'N/A'}</small>
+                                                </div>
+                                            </td>
+                                            <td>{clp(orden.total)}</td>
+                                            <td>
+                                                <span className="badge bg-success">
+                                                    Completada
+                                                </span>
+                                            </td>
+                                            <td>
+                                                <Link
+                                                    to={`/admin/ordenes/${orden.id}`}
+                                                    className="btn btn-sm btn-primary"
+                                                >
+                                                    <i className="fa fa-eye me-1"></i> Ver detalles
+                                                </Link>
+                                            </td>
+                                        </tr>
+                                    );
+                                })}
+                                {filtradas.length === 0 && !loading && (
                                     <tr>
                                         <td colSpan="6" className="text-center text-muted py-4">
                                             No se encontraron órdenes.

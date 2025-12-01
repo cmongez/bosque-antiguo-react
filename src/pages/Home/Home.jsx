@@ -2,16 +2,35 @@ import React, { useEffect, useState } from 'react'
 import imagen1 from './../../assets/img/alto-angulo-de-plantas-en-macetas-negras.jpg'
 import imagen2 from './../../assets/img/close-up-manos-sosteniendo-plantas-de-interior.jpg'
 import imagen3 from './../../assets/img/fondo-de-planta-de-interior-verde-para-amantes-de-las-plantas.jpg'
-import producto1 from './../../assets/img/jardineria1.jpg'
-import producto2 from './../../assets/img/jardineria.jpg'
 import producto3 from './../../assets/img/close-up-manos-sosteniendo-plantas-de-interior.jpg'
 import { Link } from 'react-router-dom'
+import { getProductsDisponibles } from '../../api/products'
+import { ProductCard } from '../../components/ProductCard'
 
 import './Home.css'
 
 export const Home = () => {
 
   const [showButton, setShowButton] = useState(false)
+  const [productosDestacados, setProductosDestacados] = useState([])
+  const [loading, setLoading] = useState(true)
+
+  // Cargar productos destacados desde la API
+  useEffect(() => {
+    const cargarProductos = async () => {
+      try {
+        const productos = await getProductsDisponibles()
+        // Tomar solo los primeros 3 productos disponibles
+        setProductosDestacados(productos.slice(0, 4))
+      } catch (error) {
+        console.error("Error al cargar productos destacados:", error)
+      } finally {
+        setLoading(false)
+      }
+    }
+
+    cargarProductos()
+  }, [])
 
   // Escucha el scroll para mostrar u ocultar el botón
   useEffect(() => {
@@ -33,6 +52,24 @@ export const Home = () => {
       top: 0,
       behavior: 'smooth'
     })
+  }
+
+  // Función para añadir al carrito
+  const addToCart = codigo => {
+    let cart = JSON.parse(localStorage.getItem('carrito')) || []
+    const producto = productosDestacados.find(p => p.codigo === codigo)
+    if (!producto) return
+
+    const existente = cart.find(p => p.codigo === codigo)
+    if (existente) {
+      existente.cantidad += 1
+    } else {
+      cart.push({ ...producto, cantidad: 1 })
+    }
+
+    localStorage.setItem('carrito', JSON.stringify(cart))
+    window.dispatchEvent(new Event('updateCart'))
+    alert(`${producto.nombre} añadido al carrito`)
   }
   return (
     <>
@@ -81,60 +118,33 @@ export const Home = () => {
       {/* PRODUCTOS DESTACADOS */}
       <section className="container py-5">
         <h2 className="text-center mb-4">Nuestros productos destacados</h2>
-        <div className="row g-4">
-          <div className="col-md-4">
-            <div className="card h-100">
-              <img src={producto1} className="card-img-top" alt="Ficus" />
-              <div className="card-body text-center">
-                <h5 className="card-title">Ficus</h5>
-                <p className="card-text">
-                  Planta de interior de hojas brillantes, fácil de cuidar.
-                </p>
-                <p><strong>Precio:</strong> $10.000</p>
-                <Link to="/detalle?codigo=PI001" className="btn btn-success">
-                  Ver detalle
-                </Link>
-              </div>
+        
+        {loading ? (
+          <div className="text-center py-4">
+            <div className="spinner-border text-success" role="status">
+              <span className="visually-hidden">Cargando productos destacados...</span>
             </div>
           </div>
-
-          <div className="col-md-4">
-            <div className="card h-100">
-              <img src={producto2} className="card-img-top" alt="Sansevieria" />
-              <div className="card-body text-center">
-                <h5 className="card-title">Sansevieria</h5>
-                <p className="card-text">
-                  Conocida como lengua de suegra, muy resistente.
-                </p>
-                <p><strong>Precio:</strong> $15.000</p>
-                <Link to="/detalle?codigo=PI002" className="btn btn-success">
-                  Ver detalle
-                </Link>
-              </div>
+        ) : (
+          <>
+            <div className="row g-4">
+              {productosDestacados.map(producto => (
+                <ProductCard
+                  key={producto.codigo}
+                  producto={producto}
+                  addToCart={addToCart}
+                />
+              ))}
             </div>
-          </div>
 
-          <div className="col-md-4">
-            <div className="card h-100">
-              <img src={producto3} className="card-img-top" alt="Mandarino" />
-              <div className="card-body text-center">
-                <h5 className="card-title">Mandarino</h5>
-                <p className="card-text">
-                  Árbol frutal de mandarinas dulces y jugosas.
-                </p>
-                <p><strong>Precio:</strong> $12.000</p>
-                <Link to="/detalle?codigo=FR001" className="btn btn-success">
-                  Ver detalle
-                </Link>
-              </div>
+            {/* Botón para ir a todos los productos */}
+            <div className="text-center mt-4">
+              <Link to="/productos" className="btn btn-outline-success btn-lg">
+                Ver todos los productos
+              </Link>
             </div>
-          </div>
-        </div>
-
-        {/* <!-- Botón para ir a todos --> */}
-        <div className="text-center mt-4">
-          <a href="productos.html" className="btn btn-outline-success btn-lg">Ver todos los productos</a>
-        </div>
+          </>
+        )}
       </section>
       {/* <!-- Carrusel 2 --> */}
       <div id="mainCarousel" className="carousel slide" data-bs-ride="carousel">

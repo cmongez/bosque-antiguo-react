@@ -45,3 +45,9 @@ export const getMisCompras = async () => {
   const res = await api.get("/sales/mis-compras");
   return res.data;
 };
+
+// Obtener órdenes por usuario específico (para admin)
+export const getOrdersByUserId = async (userId) => {
+  const res = await api.get(`/sales/user/${userId}`);
+  return res.data;
+};

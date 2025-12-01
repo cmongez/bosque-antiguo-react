@@ -54,11 +54,11 @@ export const AdminLayout = () => {
                             <i className="fa fa-users me-2"></i>Usuarios
                         </Link>
                     </li>
-                    <li>
+                    {/* <li>
                         <Link to="/admin/reportes" className={`nav-link text-white ${isActive("/admin/reportes")}`}>
                             <i className="fa fa-chart-bar me-2"></i>Reportes
                         </Link>
-                    </li>
+                    </li> */}
                 </ul>
 
                 <hr className="border-secondary" />
@@ -103,7 +103,7 @@ export const AdminLayout = () => {
                             <li><Link to="/admin/productos" className="nav-link"><i className="fa fa-box me-2"></i>Productos</Link></li>
                             <li><Link to="/admin/categorias" className="nav-link"><i className="fa fa-tags me-2"></i>Categorías</Link></li>
                             <li><Link to="/admin/usuarios" className="nav-link"><i className="fa fa-users me-2"></i>Usuarios</Link></li>
-                            <li><Link to="/admin/reportes" className="nav-link"><i className="fa fa-chart-bar me-2"></i>Reportes</Link></li>
+                            {/* <li><Link to="/admin/reportes" className="nav-link"><i className="fa fa-chart-bar me-2"></i>Reportes</Link></li> */}
                             <li><hr className="dropdown-divider" /></li>
                             <li><Link to="/admin/perfil" className="nav-link"><i className="fa fa-user-circle me-2"></i>Perfil</Link></li>
                             <li><Link to="/" className="nav-link"><i className="fa fa-store me-2"></i>Tienda</Link></li>

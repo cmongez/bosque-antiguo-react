@@ -1,8 +1,7 @@
 import React, { useMemo, useState, useEffect } from "react";
 import { useNavigate, useParams } from "react-router-dom";
+import { getCategories, getCategoryById, updateCategory } from "../../api/products";
 
-const readLS = (k, fb) => { try { const r = localStorage.getItem(k); return r ? JSON.parse(r) : fb; } catch { return fb; } };
-const writeLS = (k, v) => localStorage.setItem(k, JSON.stringify(v));
 const slugify = (s) =>
     (s || "")
         .toString()
@@ -14,36 +13,105 @@ const slugify = (s) =>
 export const AdminCategoriaEditar = () => {
     const { id } = useParams();
     const nav = useNavigate();
-    const [cats, setCats] = useState(() => readLS("categorias", []));
-    const cat = cats.find(c => c.id === id);
+    const [cats, setCats] = useState([]);
+    const [cat, setCat] = useState(null);
+    const [loading, setLoading] = useState(true);
 
-    const [nombre, setNombre] = useState(cat?.nombre || "");
-    const [descripcion, setDescripcion] = useState(cat?.descripcion || "");
-    const [activo, setActivo] = useState(cat?.activo ?? true);
+    const [nombre, setNombre] = useState("");
+    const [descripcion, setDescripcion] = useState("");
+    const [activo, setActivo] = useState(true);
     const slug = useMemo(() => slugify(nombre), [nombre]);
     const [touched, setTouched] = useState(false);
 
+    // Cargar categoría por ID desde la API
     useEffect(() => {
-        if (!cat) nav("/admin/categorias", { replace: true });
-        // eslint-disable-next-line react-hooks/exhaustive-deps
-    }, [id]);
+        const cargarCategoria = async () => {
+            try {
+                setLoading(true);
+                
+                // Cargar la categoría específica y todas las categorías para validar duplicados
+                const [categoriaData, todasCategorias] = await Promise.all([
+                    getCategoryById(id),
+                    getCategories()
+                ]);
+                
+                setCat(categoriaData);
+                setCats(todasCategorias);
+                
+                // Inicializar los campos del formulario
+                setNombre(categoriaData.nombre || "");
+                setDescripcion(categoriaData.descripcion || "");
+                setActivo(categoriaData.activo ?? true);
+                
+            } catch (error) {
+                console.error('Error al cargar categoría:', error);
+                alert('Error al cargar la categoría');
+                nav("/admin/categorias", { replace: true });
+            } finally {
+                setLoading(false);
+            }
+        };
+
+        if (id) {
+            cargarCategoria();
+        }
+    }, [id, nav]);
 
     const existsOther = useMemo(
         () => cats.some(c => c.slug === slug && c.id !== id),
         [cats, slug, id]
     );
 
-    const save = (e) => {
+    const save = async (e) => {
         e.preventDefault();
         setTouched(true);
-        if (!nombre.trim() || existsOther) return;
-        const next = cats.map(c =>
-            c.id === id ? { ...c, nombre: nombre.trim(), slug, descripcion: descripcion.trim(), activo } : c
-        );
-        setCats(next);
-        writeLS("categorias", next);
-        nav("/admin/categorias", { replace: true });
+        
+        if (!nombre.trim()) {
+            alert('El nombre de la categoría es requerido');
+            return;
+        }
+        
+        if (existsOther) {
+            alert('Ya existe otra categoría con este nombre');
+            return;
+        }
+        
+        try {
+            setLoading(true);
+            
+            // Actualizar la categoría usando la API
+            const categoriaActualizada = {
+                nombre: nombre.trim(),
+                descripcion: descripcion.trim(),
+                activo,
+                slug
+            };
+            
+            await updateCategory(id, categoriaActualizada);
+            
+            alert('Categoría actualizada correctamente');
+            nav("/admin/categorias", { replace: true });
+            
+        } catch (error) {
+            console.error('Error al actualizar categoría:', error);
+            alert('Error al actualizar la categoría: ' + error.message);
+        } finally {
+            setLoading(false);
+        }
     };
+
+    if (loading) {
+        return (
+            <div className="container py-3">
+                <div className="text-center py-4">
+                    <div className="spinner-border text-success" role="status">
+                        <span className="visually-hidden">Cargando...</span>
+                    </div>
+                    <p className="mt-2 text-muted">Cargando categoría...</p>
+                </div>
+            </div>
+        );
+    }
 
     if (!cat) return null;
 
@@ -82,8 +150,15 @@ export const AdminCategoriaEditar = () => {
                         </div>
 
                         <div className="col-12 d-flex gap-2">
-                            <button type="submit" className="btn btn-primary" disabled={!nombre.trim() || existsOther}>
-                                Guardar cambios
+                            <button type="submit" className="btn btn-primary" disabled={loading || !nombre.trim() || existsOther}>
+                                {loading ? (
+                                    <>
+                                        <span className="spinner-border spinner-border-sm me-2" role="status"></span>
+                                        Guardando...
+                                    </>
+                                ) : (
+                                    'Guardar cambios'
+                                )}
                             </button>
                             <button type="button" className="btn btn-outline-secondary" onClick={() => nav("/admin/categorias")}>
                                 Cancelar

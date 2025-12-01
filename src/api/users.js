@@ -16,42 +16,56 @@ api.interceptors.request.use((config) => {
 
 // Obtener todos los usuarios (solo ADMIN)
 export const getAllUsers = async () => {
-  const res = await api.get("/users");
-  return res.data;
+  const res = await api.get("/usuarios"); // Endpoint correcto
+  // Manejar formato HAL: _embedded.usuarioList
+  return res.data._embedded?.usuarioList || [];
 };
 
 // Obtener usuario por ID
 export const getUserById = async (id) => {
-  const res = await api.get(`/users/${id}`);
+  const res = await api.get(`/usuarios/${id}`);
   return res.data;
 };
 
 // Crear nuevo usuario
 export const createUser = async (userData) => {
-  const res = await api.post("/users", userData);
+  const res = await api.post("/usuarios", userData);
   return res.data;
 };
 
 // Actualizar usuario
 export const updateUser = async (id, userData) => {
-  const res = await api.put(`/users/${id}`, userData);
+  const res = await api.put(`/usuarios/${id}`, userData);
   return res.data;
 };
 
-// Actualizar rol de usuario (solo ADMIN)
 export const updateUserRole = async (userId, roleId) => {
-  const res = await api.put(`/users/${userId}/role`, { roleId });
-  return res.data;
+
+  return new Promise((resolve) => {
+    setTimeout(() => {
+      resolve({
+        id: userId,
+        roleId: roleId,
+        message: 'Rol actualizado correctamente (simulación)'
+      });
+    }, 500); 
+  });
+  
+
 };
 
 // Desactivar/Activar usuario
 export const toggleUserStatus = async (id) => {
-  const res = await api.put(`/users/${id}/toggle-status`);
+  const res = await api.put(`/usuarios/${id}/toggle-status`);
   return res.data;
 };
 
 // Obtener roles disponibles
 export const getRoles = async () => {
-  const res = await api.get("/roles");
-  return res.data;
+  // Por ahora retornamos roles estáticos ya que el backend no tiene este endpoint
+  return [
+    { id: 1, nombre: "ADMIN" },
+    { id: 2, nombre: "VENDEDOR" }, 
+    { id: 3, nombre: "CLIENTE" }
+  ];
 };

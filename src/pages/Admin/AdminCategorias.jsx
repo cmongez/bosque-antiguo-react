@@ -1,6 +1,6 @@
 import React, { useEffect, useMemo, useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
-import { getCategories, getProducts } from "../../api/products";
+import { getCategories, getProducts, deleteCategory, updateCategory } from "../../api/products";
 
 // helpers LS
 const readLS = (k, fb) => {
@@ -49,27 +49,62 @@ export const AdminCategorias = () => {
 
     const toggleActiva = async (id) => {
         try {
-            // Por ahora actualizar solo el estado local
-            const next = cats.map(c => c.id === id ? { ...c, activo: !c.activo } : c);
+            setLoading(true);
+            const categoria = cats.find(c => c.id === id);
+            if (!categoria) return;
+
+            // Actualizar el estado activo usando la API
+            const categoriaActualizada = await updateCategory(id, {
+                ...categoria,
+                activo: !categoria.activo
+            });
+            
+            // Actualizar el estado local
+            const next = cats.map(c => c.id === id ? categoriaActualizada : c);
             setCats(next);
+            
+            // También actualizar localStorage como respaldo
             writeLS("categorias", next);
         } catch (error) {
             console.error('Error al actualizar categoría:', error);
             alert('Error al actualizar la categoría');
+        } finally {
+            setLoading(false);
         }
     };
 
     const eliminar = async (id) => {
-        if (!confirm("¿Eliminar esta categoría?")) return;
+        const categoria = cats.find(c => c.id === id);
+        if (!categoria) return;
+        
+        const productosEnCategoria = totalPorCategoria[categoria.nombre] || 0;
+        
+        let mensaje = `¿Eliminar la categoría "${categoria.nombre}"?`;
+        if (productosEnCategoria > 0) {
+            mensaje += `\n\nATENCIÓN: Esta categoría tiene ${productosEnCategoria} producto(s) asociado(s). Al eliminarla, estos productos quedarán sin categoría.`;
+        }
+        
+        if (!confirm(mensaje)) return;
         
         try {
-            // Por ahora actualizar solo el estado local
+            setLoading(true);
+            
+            // Eliminar usando la API
+            await deleteCategory(id);
+            
+            // Actualizar el estado local
             const next = cats.filter(c => c.id !== id);
             setCats(next);
+            
+            // También actualizar localStorage como respaldo
             writeLS("categorias", next);
+            
+            alert('Categoría eliminada correctamente');
         } catch (error) {
             console.error('Error al eliminar categoría:', error);
-            alert('Error al eliminar la categoría');
+            alert('Error al eliminar la categoría: ' + error.message);
+        } finally {
+            setLoading(false);
         }
     };
 
@@ -78,9 +113,12 @@ export const AdminCategorias = () => {
             <div className="d-flex justify-content-between align-items-center mb-4">
                 <h2 className="mb-0"><i className="fa fa-tags me-2"></i>Categorías</h2>
                 <div>
-                    <Link to="/admin/categorias/nueva" className="btn btn-success">
+                    <button 
+                        onClick={() => nav("/admin/categorias/nueva")}
+                        className="btn btn-success"
+                    >
                         <i className="fa fa-plus me-2"></i>Nueva categoría
-                    </Link>
+                    </button>
                 </div>
             </div>
 
@@ -101,8 +139,6 @@ export const AdminCategorias = () => {
                                 <thead className="table-dark">
                                     <tr>
                                         <th>Nombre</th>
-                                        <th>Slug</th>
-                                        <th className="text-center">Activa</th>
                                         <th className="text-center"># Productos</th>
                                         <th className="text-end">Acciones</th>
                                     </tr>
@@ -111,20 +147,18 @@ export const AdminCategorias = () => {
                                     {cats.map(c => (
                                         <tr key={c.id}>
                                             <td>{c.nombre}</td>
-                                            <td><span className="badge text-bg-secondary">{c.slug}</span></td>
-                                            <td className="text-center">
-                                                <span className={`badge ${c.activo ? "text-bg-success" : "text-bg-secondary"}`}>
-                                                    {c.activo ? "Sí" : "No"}
-                                                </span>
-                                            </td>
+
                                             <td className="text-center">{totalPorCategoria[c.nombre] || 0}</td>
                                             <td className="text-end">
                                                 <button onClick={() => toggleActiva(c.id)} className="btn btn-sm btn-outline-warning me-2">
                                                     {c.activo ? "Desactivar" : "Activar"}
                                                 </button>
-                                                <Link to={`/admin/categorias/editar/${c.id}`} className="btn btn-sm btn-primary me-2">
+                                                <button 
+                                                    onClick={() => nav(`/admin/categorias/editar/${c.id}`)}
+                                                    className="btn btn-sm btn-primary me-2"
+                                                >
                                                     <i className="fa fa-edit"></i>
-                                                </Link>
+                                                </button>
                                                 <button onClick={() => eliminar(c.id)} className="btn btn-sm btn-danger">
                                                     <i className="fa fa-trash"></i>
                                                 </button>
