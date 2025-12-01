@@ -2,7 +2,7 @@
 import axios from "axios";
 
 const api = axios.create({
-  baseURL: "/api/v1/reports", // Proxy hacia reportes en puerto 8083
+  baseURL: "http://100.31.23.11:8083/api/v1/reports", // EC2 - Microservicio reportes
 });
 
 // Agregar interceptor para JWT automático

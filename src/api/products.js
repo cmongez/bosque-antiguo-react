@@ -2,7 +2,7 @@
 import axios from "axios";
 
 const api = axios.create({
-  baseURL: "/api/v1", // Vite hace proxy a http://localhost:8080
+  baseURL: "http://100.31.23.11:8080/api/v1", // EC2 - Microservicio productos
 });
 
 // Interceptor para agregar JWT automáticamente

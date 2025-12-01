@@ -2,7 +2,7 @@
 import axios from "axios";
 
 const api = axios.create({
-  baseURL: "/api/v1", // Proxy hacia ventas en puerto 8081
+  baseURL: "http://100.31.23.11:8081/api/v1", // EC2 - Microservicio ventas
 });
 
 // Agregar interceptor para JWT automático
